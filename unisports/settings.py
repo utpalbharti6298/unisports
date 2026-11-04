@@ -5,6 +5,7 @@
 from pathlib import Path
 
 import os
+import sys
 from dotenv import load_dotenv
 import mongoengine
 
@@ -89,7 +90,10 @@ MONGO_URI = os.getenv('MONGO_URI', 'mongodb://localhost:27017/unisports_db')
 MONGO_DB_NAME = os.getenv('MONGO_DB_NAME', 'unisports_db')
 USE_MONGOMOCK = os.getenv('USE_MONGOMOCK', 'False').lower() in ('1', 'true')
 
-if USE_MONGOMOCK:
+# Detect build-time / asset collection tasks so static build never hangs or fails on DB
+is_static_build_task = any(cmd in sys.argv for cmd in ['collectstatic', 'findstatic'])
+
+if USE_MONGOMOCK or is_static_build_task:
     import mongomock
     mongoengine.disconnect(alias='default')
     mongoengine.connect(
@@ -98,7 +102,10 @@ if USE_MONGOMOCK:
         alias='default',
         uuidRepresentation='standard'
     )
-    print("[UniSports DB] USE_MONGOMOCK is set: running with in-memory mongomock.")
+    if is_static_build_task:
+        print("[UniSports DB] Static build task detected: isolated using in-memory mock to avoid DB block.")
+    else:
+        print("[UniSports DB] USE_MONGOMOCK is set: running with in-memory mongomock.")
 else:
     # Check if existing connection is already healthy to prevent drop on Django autoreload
     already_connected = False
@@ -163,8 +170,6 @@ else:
         print(f"[UniSports DB] Note on schema integrity check: {e}")
 
 
-
-
 # Database-less Session Engine (using cryptographically signed cookies)
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 SESSION_COOKIE_NAME = 'unisports_session'
@@ -185,10 +190,7 @@ X_FRAME_OPTIONS = 'DENY'
 SECURE_REFERRER_POLICY = 'same-origin'
 
 
-
 # Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -204,18 +206,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
-
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
