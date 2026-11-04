@@ -1,0 +1,95 @@
+<!-- What this file does:
+     Displays the annual inter-university sports leaderboard, calculating total ranking points from Gold (5 pts), Silver (3 pts), and Bronze (1 pt) medals, with year and sport filters.
+-->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <!-- Leaderboard header with formula breakdown and responsive filter dropdowns -->
+  <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--space-8); flex-wrap: wrap; gap: var(--space-4);">
+    <div>
+      <div class="badge badge-primary" style="margin-bottom: var(--space-2);">Championship Leaderboard</div>
+      <h1 style="font-size: var(--text-3xl);">Overall University Rankings</h1>
+      <p style="color: var(--color-text-secondary); font-size: var(--text-sm);">
+        Formula: <code style="font-weight: 700; color: var(--color-text-primary);">Total Points = (Gold × 5) + (Silver × 3) + (Bronze × 1)</code>
+      </p>
+    </div>
+
+    <!-- Filter Form -->
+    <form method="GET" style="display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap;">
+      <div>
+        <select name="year" class="form-control" style="padding: 0.4rem 0.75rem; font-size: var(--text-sm);" onchange="this.form.submit()">
+          {% for y in years %}
+            <option value="{{ y }}" {% if y == selected_year %}selected{% endif %}>{{ y }} Season</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <select name="sport" class="form-control" style="padding: 0.4rem 0.75rem; font-size: var(--text-sm);" onchange="this.form.submit()">
+          <option value="All" {% if selected_sport == 'All' %}selected{% endif %}>All Disciplines</option>
+          {% for s in sports %}
+            <option value="{{ s.name }}" {% if s.name == selected_sport %}selected{% endif %}>{{ s.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn btn-sm">Filter</button>
+    </form>
+  </div>
+
+  <!-- Leaderboard Table -->
+  <div class="card">
+    <div class="table-container">
+      <table class="table-clean">
+        <thead>
+          <tr>
+            <th style="width: 70px;">Rank</th>
+            <th>University</th>
+            <th style="text-align: center; width: 100px;">Gold (×5)</th>
+            <th style="text-align: center; width: 100px;">Silver (×3)</th>
+            <th style="text-align: center; width: 100px;">Bronze (×1)</th>
+            <th style="text-align: right; width: 120px; font-weight: 700;">Total Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for uni in ranked_universities %}
+            <tr>
+              <td>
+                <span class="badge {% if uni.rank == 1 %}badge-primary{% endif %}" style="font-weight: 700; font-size: var(--text-sm);">
+                  #{{ uni.rank }}
+                </span>
+              </td>
+              <td>
+                <span class="badge badge-primary" style="margin-right: var(--space-2);">{{ uni.university_code }}</span>
+                <strong>
+                  <a href="{% url 'universities:detail' uni.university_id %}" style="color: var(--color-text-primary);">
+                    {{ uni.university_name }}
+                  </a>
+                </strong>
+              </td>
+
+              <td style="text-align: center; font-weight: 600; color: #B45309;">{{ uni.gold }}</td>
+              <td style="text-align: center; font-weight: 600; color: #475569;">{{ uni.silver }}</td>
+              <td style="text-align: center; font-weight: 600; color: #9A3412;">{{ uni.bronze }}</td>
+              <td style="text-align: right; font-weight: 800; font-size: var(--text-lg); color: var(--color-primary);">
+                {{ uni.total_points }} pts
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" style="text-align: center; padding: var(--space-12); color: var(--color-text-muted);">
+                <div style="font-size: var(--text-base); font-weight: 600; color: var(--color-text-secondary); margin-bottom: var(--space-2);">
+                  No championship medal results finalized for {{ selected_year }} ({{ selected_sport }}).
+                </div>
+                <div style="font-size: var(--text-xs); max-width: 520px; margin: 0 auto; color: var(--color-text-muted); line-height: 1.6;">
+                  Overall Rankings aggregate official <strong>Podium Medals (Gold/Silver/Bronze)</strong> from completed championships. Tournaments in the {{ selected_year }} season are currently <em>Ongoing</em> or <em>Upcoming</em>. To view active match results and league tables, explore the <a href="{% url 'tournaments:list' %}" style="text-decoration: underline; color: var(--color-primary); font-weight: 600;">Tournaments Calendar →</a> or switch to the <strong>2025 Season</strong> above.
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

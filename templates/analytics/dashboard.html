@@ -1,0 +1,200 @@
+<!-- What this file does:
+     Interactive analytics dashboard. Fetches real-time JSON metrics and renders Chart.js charts for season rankings, medal distributions, sports participation, and win rates.
+-->
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<!-- Responsive height wrapper for dynamic Chart.js canvas elements -->
+<style>
+  .chart-wrapper {
+    position: relative;
+    height: 320px;
+    width: 100%;
+  }
+  @media (max-width: 480px) {
+    .chart-wrapper {
+      height: 260px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--space-8); flex-wrap: wrap; gap: var(--space-4);">
+    <div>
+      <div class="badge badge-primary" style="margin-bottom: var(--space-2);">Statistical Intelligence</div>
+      <h1 style="font-size: var(--text-3xl);">Sports Analytics & Visualization</h1>
+      <p style="color: var(--color-text-secondary); font-size: var(--text-sm);">
+        Interactive visual charts rendered dynamically via Chart.js and MongoDB aggregation pipelines.
+      </p>
+    </div>
+
+    <div>
+      <span class="badge badge-success" id="sync-status">● Live Database Synced</span>
+    </div>
+  </div>
+
+  <!-- Chart Grid -->
+  <div class="grid grid-cols-2" style="margin-bottom: var(--space-8);">
+    <!-- Chart 1: Ranking Scores -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Ranking Points (2025 Season)</h2>
+        <span class="badge">Formula: (G×5)+(S×3)+(B×1)</span>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="rankingChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Chart 2: Medal Distribution -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Championship Medal Distribution</h2>
+        <span class="badge">Total Medals Awarded</span>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="medalsChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Chart 3: Sport Participation -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Disciplines Participation</h2>
+        <span class="badge">Universities Enrolled</span>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="sportsChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Chart 4: University Win Rates -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Competitive Win Percentage (%)</h2>
+        <span class="badge">Top Universities</span>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="winRateChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Global Clean Chart Defaults for Light Mode
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.color = '#475569';
+    Chart.defaults.borderColor = '#E2E8F0';
+
+    fetch("{% url 'analytics:api_stats' %}")
+      .then(response => response.json())
+      .then(data => {
+        // 1. Ranking Chart (Bar)
+        new Chart(document.getElementById('rankingChart'), {
+          type: 'bar',
+          data: {
+            labels: data.rankings.labels,
+            datasets: [{
+              label: 'Ranking Score (Pts)',
+              data: data.rankings.points,
+              backgroundColor: '#1D4ED8',
+              borderRadius: 6,
+              maxBarThickness: 44
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, grid: { color: '#F1F5F9' } },
+              x: { grid: { display: false } }
+            }
+          }
+        });
+
+        // 2. Medals Chart (Doughnut)
+        new Chart(document.getElementById('medalsChart'), {
+          type: 'doughnut',
+          data: {
+            labels: data.medals.labels,
+            datasets: [{
+              data: data.medals.data,
+              backgroundColor: ['#F59E0B', '#94A3B8', '#D97706'],
+              borderWidth: 2,
+              borderColor: '#FFFFFF'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom' }
+            },
+            cutout: '68%'
+          }
+        });
+
+        // 3. Sports Participation (Bar)
+        new Chart(document.getElementById('sportsChart'), {
+          type: 'bar',
+          data: {
+            labels: data.sports.labels,
+            datasets: [{
+              label: 'Universities',
+              data: data.sports.data,
+              backgroundColor: '#059669',
+              borderRadius: 6,
+              maxBarThickness: 40
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#F1F5F9' } },
+              x: { grid: { display: false } }
+            }
+          }
+        });
+
+        // 4. Win Rates (Horizontal Bar)
+        new Chart(document.getElementById('winRateChart'), {
+          type: 'bar',
+          data: {
+            labels: data.win_rates.labels,
+            datasets: [{
+              label: 'Win Rate (%)',
+              data: data.win_rates.data,
+              backgroundColor: '#2563EB',
+              borderRadius: 6,
+              maxBarThickness: 28
+            }]
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' }, grid: { color: '#F1F5F9' } },
+              y: { grid: { display: false } }
+            }
+          }
+        });
+      })
+      .catch(err => {
+        console.error("Failed to fetch analytics statistics:", err);
+      });
+  });
+</script>
+{% endblock %}

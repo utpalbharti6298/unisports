@@ -1,0 +1,112 @@
+<!-- What this file does:
+     Tournament edit form. Allows Host Coaches and Admins to update tournament details, venues, season year, lifecycle status, and competing rosters directly without repetitive admin re-approval.
+-->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 760px; margin-top: var(--space-8); padding-bottom: var(--space-12);">
+  <div class="card">
+    <!-- Header with breadcrumb and status summary -->
+    <div style="margin-bottom: var(--space-6);">
+      <a href="{% url 'tournaments:detail' tournament.id %}" style="font-size: var(--text-xs); color: var(--color-text-secondary);">← Back to Tournament</a>
+      <div style="display: flex; gap: var(--space-2); align-items: center; margin-top: var(--space-2); margin-bottom: var(--space-1); flex-wrap: wrap;">
+        <span class="badge badge-primary">{{ tournament.sport_name }}</span>
+        {% if tournament.approval_status == 'Approved' %}
+          <span class="badge badge-success">Sanctioned by Board</span>
+        {% elif tournament.approval_status == 'Pending' %}
+          <span class="badge" style="background: #FEF3C7; color: #B45309; border-color: #FDE68A;">Sanction Pending</span>
+        {% endif %}
+      </div>
+      <h1 style="font-size: clamp(1.5rem, 3.5vw, var(--text-2xl));">Edit Tournament Details</h1>
+      <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-top: var(--space-1);">
+        Update scheduling, stadium venue, participating university roster, and tournament status.
+      </p>
+    </div>
+
+    <!-- Delegated Authority Notice -->
+    <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-sm); padding: var(--space-3) var(--space-4); margin-bottom: var(--space-6); font-size: var(--text-xs); color: var(--color-text-primary);">
+      <strong style="color: #059669;">Delegated Host Management:</strong> Once a tournament is sanctioned by the Central Board Admin, the host member can update venue, schedules, and scores directly without requiring repeated board approvals.
+    </div>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="badge {% if message.tags == 'error' %}badge-danger{% else %}badge-success{% endif %}" style="display: block; margin-bottom: var(--space-4); padding: 0.625rem 1rem;">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <!-- Championship Title -->
+      <div class="form-group">
+        <label class="form-label" for="name">Championship / Tournament Title</label>
+        <input type="text" id="name" name="name" class="form-control" value="{{ tournament.name }}" required>
+      </div>
+
+      <!-- Sport discipline (display-only) and Season Year -->
+      <div class="form-grid-2" style="margin-bottom: var(--space-4);">
+        <div>
+          <label class="form-label">Sport Discipline</label>
+          <input type="text" class="form-control" value="{{ tournament.sport_name }} ({{ tournament.sport_code }})" disabled style="background: var(--color-surface); opacity: 0.8; cursor: not-allowed;">
+        </div>
+
+        <div>
+          <label class="form-label" for="year">Season / Academic Year</label>
+          <input type="number" id="year" name="year" class="form-control" value="{{ tournament.year }}" min="2020" max="2035" required>
+        </div>
+      </div>
+
+      <!-- Host University (display-only) and Lifecycle Status -->
+      <div class="form-grid-2" style="margin-bottom: var(--space-4);">
+        <div>
+          <label class="form-label">Host University / Organizer</label>
+          <input type="text" class="form-control" value="{{ tournament.host_university_name }}" disabled style="background: var(--color-surface); opacity: 0.8; cursor: not-allowed;">
+        </div>
+
+        <div>
+          <label class="form-label" for="status">Tournament Lifecycle Status</label>
+          <select id="status" name="status" class="form-control">
+            <option value="Upcoming" {% if tournament.status == 'Upcoming' %}selected{% endif %}>Upcoming (Scheduled)</option>
+            <option value="Ongoing" {% if tournament.status == 'Ongoing' %}selected{% endif %}>Ongoing (Active Matches)</option>
+            <option value="Completed" {% if tournament.status == 'Completed' %}selected{% endif %}>Completed (Final Standings)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Venue / Stadium Details -->
+      <div class="form-group">
+        <label class="form-label" for="venue">Stadium / Complex / Venue Details</label>
+        <input type="text" id="venue" name="venue" class="form-control" value="{{ tournament.venue }}" placeholder="e.g. University Sports Complex, Central Grounds">
+      </div>
+
+      <!-- Participating Universities Roster Checkboxes -->
+      <div class="form-group" style="margin-top: var(--space-6); margin-bottom: var(--space-6);">
+        <label class="form-label" style="margin-bottom: var(--space-2);">
+          Participating Universities Roster
+          <span style="font-weight: 400; font-size: var(--text-xs); color: var(--color-text-secondary);">(Check all universities competing in this championship)</span>
+        </label>
+        
+        <div class="form-grid-2" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: var(--space-4); max-height: 240px; overflow-y: auto; gap: var(--space-2);">
+          {% for uni in universities %}
+            <label style="display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-xs); cursor: pointer; padding: 0.25rem 0;">
+              <input type="checkbox" name="participating_universities" value="{{ uni.id }}" {% if uni.id|stringformat:"s" in existing_uni_ids %}checked{% endif %} style="cursor: pointer;">
+              <span>
+                <strong style="color: var(--color-text-primary);">{{ uni.short_code }}</strong>
+                <span style="color: var(--color-text-secondary);"> — {{ uni.name }}</span>
+              </span>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div style="display: flex; gap: var(--space-3); justify-content: flex-end; border-top: 1px solid var(--color-border-subtle); padding-top: var(--space-4); flex-wrap: wrap;">
+        <a href="{% url 'tournaments:detail' tournament.id %}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+<!-- What this file does:
+     University directory roster page. Displays searchable cards of all participating academic institutions, their locations, established year, and sports enrolled.
+-->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <!-- Header banner with title and real-time search filter form -->
+  <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--space-8); flex-wrap: wrap; gap: var(--space-4);">
+    <div>
+      <div class="badge badge-primary" style="margin-bottom: var(--space-2);">Institutional Roster</div>
+      <h1 style="font-size: var(--text-3xl);">Participating Universities</h1>
+      <p style="color: var(--color-text-secondary); font-size: var(--text-sm);">
+        Directory of premier universities enrolled in inter-university athletic championships.
+      </p>
+    </div>
+
+    <!-- Responsive search bar -->
+    <form method="GET" style="display: flex; gap: var(--space-2); width: 100%; max-width: 320px;">
+      <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search university...">
+      <button type="submit" class="btn btn-sm">Search</button>
+    </form>
+  </div>
+
+  <div class="grid grid-cols-3">
+    {% for uni in universities %}
+      <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-3);">
+            <span class="badge badge-primary">{{ uni.short_code }}</span>
+            <span style="font-size: var(--text-xs); color: var(--color-text-muted);">Est. {{ uni.established_year|default:"N/A" }}</span>
+          </div>
+          <h2 style="font-size: var(--text-lg); margin-bottom: var(--space-2);">
+            <a href="{% url 'universities:detail' uni.id %}" style="color: var(--color-text-primary);">{{ uni.name }}</a>
+          </h2>
+          <div style="font-size: var(--text-xs); color: var(--color-text-secondary); margin-bottom: var(--space-4);">
+            {{ uni.city }}, {{ uni.state }}
+          </div>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: var(--space-4);">
+            {% for sport in uni.sports_enrolled %}
+              <span class="badge" style="font-size: 0.65rem;">{{ sport }}</span>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--color-border); padding-top: var(--space-3); display: flex; justify-content: space-between; align-items: center;">
+          {% if uni.website %}
+            <a href="{{ uni.website }}" target="_blank" style="font-size: var(--text-xs); color: var(--color-text-muted);">Website ↗</a>
+          {% else %}
+            <span></span>
+          {% endif %}
+          <a href="{% url 'universities:detail' uni.id %}" class="btn btn-secondary btn-sm">Athletic Profile →</a>
+        </div>
+      </div>
+    {% empty %}
+      <div class="card" style="grid-column: 1 / -1; text-align: center; padding: var(--space-12);">
+        <p style="color: var(--color-text-secondary); margin-bottom: var(--space-4);">No universities found matching your search.</p>
+        <a href="{% url 'universities:list' %}" class="btn btn-secondary btn-sm">Clear Search</a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

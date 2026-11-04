@@ -1,0 +1,3 @@
+@echo off
+echo Starting UniSports Platform...
+.\venv\Scripts\python manage.py runserver

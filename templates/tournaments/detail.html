@@ -1,0 +1,183 @@
+<!-- What this file does:
+     Tournament detail page. Displays tournament overview, dynamic points table standings, match results and summaries, PDF report export link, and medal podium.
+-->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <!-- Back navigation breadcrumb -->
+  <div style="margin-bottom: var(--space-6);">
+    <a href="{% url 'tournaments:list' %}" style="font-size: var(--text-xs); color: var(--color-text-secondary);">← Back to Tournaments</a>
+  </div>
+
+  <!-- Tournament Header Card -->
+  <div class="card" style="margin-bottom: var(--space-8);">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: var(--space-4);">
+      <div>
+        <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2); flex-wrap: wrap;">
+          <span class="badge badge-primary">{{ tournament.sport_name }}</span>
+          <span style="font-size: var(--text-sm); font-weight: 700; color: var(--color-text-secondary);">{{ tournament.year }} Season</span>
+          {% if tournament.status == 'Completed' %}
+            <span class="badge badge-success">Completed</span>
+          {% elif tournament.status == 'Ongoing' %}
+            <span class="badge badge-primary">Ongoing</span>
+          {% else %}
+            <span class="badge">Upcoming</span>
+          {% endif %}
+          {% if tournament.approval_status == 'Pending' %}
+            <span class="badge" style="background: #FEF3C7; color: #B45309; border-color: #FDE68A;">Sanction Pending</span>
+          {% elif tournament.approval_status == 'Approved' %}
+            <span class="badge" style="background: #ECFDF5; color: #059669; border-color: #A7F3D0;">Sanctioned</span>
+          {% endif %}
+        </div>
+        <h1 style="font-size: clamp(1.75rem, 4vw, var(--text-3xl)); margin-bottom: var(--space-2);">{{ tournament.name }}</h1>
+        <p style="color: var(--color-text-secondary); font-size: var(--text-sm);">
+          Venue: {{ tournament.venue }} · Host: <strong>{{ tournament.host_university_name }}</strong> · <strong>{{ tournament.university_count }} Universities</strong>
+        </p>
+      </div>
+
+      <div style="display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap;">
+        {% if can_edit %}
+          <a href="{% url 'tournaments:edit' tournament.id %}" class="btn btn-sm btn-secondary">Edit Details</a>
+        {% endif %}
+        {% if request.session.user.role == 'admin' and tournament.approval_status == 'Pending' %}
+          <a href="{% url 'accounts:admin_approve_tournament' tournament.id %}" class="btn btn-sm" style="background: #059669; color: #fff; border-color: #059669;">Sanction Tournament</a>
+        {% endif %}
+        {% if request.session.user.role == 'admin' %}
+          <a href="{% url 'accounts:finalize_tournament' tournament.id %}" class="btn btn-sm" style="background: #059669; color: #fff; border-color: #059669;">
+            {% if tournament.status == 'Completed' %}Edit Medals{% else %}Finalize & Award Medals{% endif %}
+          </a>
+        {% endif %}
+        <a href="{% url 'tournaments:export_pdf' tournament.id %}" class="btn btn-sm">Download Official Report (PDF)</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Points Table Standings (Algorithm 3) -->
+  <div class="card" style="margin-bottom: var(--space-8);">
+    <div class="card-header">
+      <h2 class="card-title">Championship Points Table</h2>
+      <span class="badge" style="font-size: 0.7rem;">W: 2 pts · D: 1 pt · L: 0 pts</span>
+    </div>
+
+    <div class="table-container">
+      <table class="table-clean">
+        <thead>
+          <tr>
+            <th style="width: 60px;">Rank</th>
+            <th>University</th>
+            <th style="text-align: center;">Played</th>
+            <th style="text-align: center;">Won</th>
+            <th style="text-align: center;">Drawn</th>
+            <th style="text-align: center;">Lost</th>
+            <th style="text-align: right; font-weight: 700;">Points</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in points_table %}
+            <tr>
+              <td><strong>#{{ row.rank }}</strong></td>
+              <td>
+                <span class="badge badge-primary" style="margin-right: var(--space-2);">{{ row.short_code }}</span>
+                <strong>{{ row.name }}</strong>
+              </td>
+              <td style="text-align: center;">{{ row.played }}</td>
+              <td style="text-align: center; color: var(--color-accent); font-weight: 600;">{{ row.won }}</td>
+              <td style="text-align: center;">{{ row.drawn }}</td>
+              <td style="text-align: center;">{{ row.lost }}</td>
+              <td style="text-align: right; font-weight: 800; font-size: var(--text-base); color: var(--color-primary);">
+                {{ row.points }}
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="7" style="text-align: center; color: var(--color-text-muted);">Points table pending fixtures.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Medal Tally (if present) & Fixtures Log -->
+  <div class="grid grid-sidebar">
+    <!-- Tournament Fixtures -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Matches & Results ({{ fixtures|length }})</h2>
+      </div>
+
+      <div class="table-container">
+        <table class="table-clean">
+          <thead>
+            <tr>
+              <th>Round</th>
+              <th>Team A</th>
+              <th>Score</th>
+              <th>Team B</th>
+              <th>Summary</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for fix in fixtures %}
+              <tr>
+                <td><span class="badge">{{ fix.round_name }}</span></td>
+                <td>
+                  <strong {% if fix.winner_name == fix.team_a.name %}style="color: var(--color-accent);"{% endif %}>
+                    {{ fix.team_a.short_code }}
+                  </strong>
+                </td>
+                <td style="font-family: var(--font-mono); font-weight: 600;">
+                  {{ fix.team_a.score_display }} - {{ fix.team_b.score_display }}
+                </td>
+                <td>
+                  <strong {% if fix.winner_name == fix.team_b.name %}style="color: var(--color-accent);"{% endif %}>
+                    {{ fix.team_b.short_code }}
+                  </strong>
+                </td>
+                <td style="font-size: var(--text-xs); color: var(--color-text-secondary);">
+                  {{ fix.result_summary }}
+                </td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="5" style="text-align: center; color: var(--color-text-muted);">No fixtures scheduled.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Right: Podium Medal Tally -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Medal Podium</h2>
+      </div>
+
+      {% if tournament.medal_tally %}
+        <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+          {% for entry in tournament.medal_tally %}
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: var(--space-3); border-bottom: 1px solid var(--color-border-subtle);">
+              <div>
+                <div style="font-weight: 700; font-size: var(--text-sm);">{{ entry.university_name }}</div>
+                <div style="font-size: var(--text-xs); color: var(--color-text-secondary);">{{ entry.university_code }}</div>
+              </div>
+              <div style="display: flex; gap: var(--space-2); font-size: var(--text-xs); flex-wrap: wrap;">
+                {% if entry.gold > 0 %}<span class="badge" style="background: #FEF3C7; color: #B45309; border-color: #FDE68A;">{{ entry.gold }} Gold</span>{% endif %}
+                {% if entry.silver > 0 %}<span class="badge" style="background: #F1F5F9; color: #475569; border-color: #E2E8F0;">{{ entry.silver }} Silver</span>{% endif %}
+                {% if entry.bronze > 0 %}<span class="badge" style="background: #FFEDD5; color: #9A3412; border-color: #FED7AA;">{{ entry.bronze }} Bronze</span>{% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p style="color: var(--color-text-secondary); font-size: var(--text-sm); margin-bottom: var(--space-3);">
+          Medal podium will be finalized upon tournament completion.
+        </p>
+        {% if request.session.user.role == 'admin' %}
+          <a href="{% url 'accounts:finalize_tournament' tournament.id %}" class="btn btn-sm btn-primary" style="display: block; text-align: center;">
+            Award Medals & Complete Tournament
+          </a>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

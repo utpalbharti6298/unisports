@@ -1,0 +1,97 @@
+<!-- What this file does:
+     Score submission form for University Coaches. Allows reporting match outcomes, rounds, and scores to the Central Sports Board for verification before publishing.
+-->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 680px; margin-top: var(--space-8);">
+  <div class="card">
+    <!-- Header with breadcrumb and instruction text -->
+    <div style="margin-bottom: var(--space-6);">
+      <a href="{% url 'accounts:university_portal' %}" style="font-size: var(--text-xs); color: var(--color-text-secondary);">← Back to Portal</a>
+      <h1 style="font-size: var(--text-2xl); margin-top: var(--space-2);">Submit Match Result</h1>
+      <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">
+        Submissions will be verified by the Central Sports Board before being published to public rankings.
+      </p>
+    </div>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="badge {% if message.tags == 'error' %}badge-danger{% else %}badge-success{% endif %}" style="display: block; margin-bottom: var(--space-4); padding: 0.5rem;">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- Match score submission form -->
+    <form method="POST">
+      {% csrf_token %}
+      
+      <div class="form-group">
+        <label class="form-label">Championship Tournament</label>
+        <select name="tournament_id" class="form-control" required>
+          {% for t in tournaments %}
+            <option value="{{ t.id }}">{{ t.name }} ({{ t.year }}) — {{ t.sport_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Opponent and match stage row -->
+      <div class="form-grid-2" style="margin-bottom: var(--space-4);">
+        <div>
+          <label class="form-label">Opponent University</label>
+          <select name="opponent_id" class="form-control" required>
+            {% for u in universities %}
+              {% if u.name != user_uni_name %}
+                <option value="{{ u.id }}">{{ u.name }} ({{ u.short_code }})</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label class="form-label">Round / Stage</label>
+          <select name="round_name" class="form-control">
+            <option value="Group Stage">Group Stage</option>
+            <option value="Quarterfinal">Quarterfinal</option>
+            <option value="Semifinal">Semifinal</option>
+            <option value="Final">Final</option>
+            <option value="League Match">League Match</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Score comparison inputs -->
+      <div class="form-grid-2" style="margin-bottom: var(--space-4);">
+        <div>
+          <label class="form-label">Your Team Score</label>
+          <input type="text" name="my_score" class="form-control" placeholder="e.g. 245/6 or 3" required>
+        </div>
+
+        <div>
+          <label class="form-label">Opponent Score</label>
+          <input type="text" name="opponent_score" class="form-control" placeholder="e.g. 210 AO or 1" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Match Outcome</label>
+        <select name="match_result" class="form-control">
+          <option value="win">Our University Won</option>
+          <option value="loss">Opponent University Won</option>
+          <option value="draw">Match Drawn / Tied</option>
+        </select>
+      </div>
+
+      <div class="form-group" style="margin-bottom: var(--space-6);">
+        <label class="form-label">Match Summary / In-Charge Notes</label>
+        <textarea name="notes" class="form-control" rows="3" placeholder="e.g. UOA won by 35 runs. Top scorer: Rahul (84)"></textarea>
+      </div>
+
+      <button type="submit" class="btn" style="width: 100%;">
+        Submit for Central Board Review
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

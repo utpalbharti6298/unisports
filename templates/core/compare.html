@@ -1,0 +1,139 @@
+<!-- What this file does:
+     Head-to-head (H2H) comparison page. Analyzes historical match records between any two selected universities across sports disciplines and calculates win differentials.
+-->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <!-- Page header banner -->
+  <div style="margin-bottom: var(--space-8);">
+    <div class="badge badge-primary" style="margin-bottom: var(--space-2);">Analytics Matrix</div>
+    <h1 style="font-size: var(--text-3xl);">Head-to-Head (H2H) Matchup Comparator</h1>
+    <p style="color: var(--color-text-secondary); font-size: var(--text-sm);">
+      Direct competitive historical analysis and victory differential powered by Pandas.
+    </p>
+  </div>
+
+  <!-- Selection Form -->
+  <div class="card" style="margin-bottom: var(--space-8);">
+    <form method="GET" class="filter-form-grid">
+      <div>
+        <label class="form-label">University A</label>
+        <select name="team_a" class="form-control">
+          {% for uni in universities %}
+            <option value="{{ uni.id }}" {% if team_a_id == uni.id|stringformat:"s" %}selected{% endif %}>
+              {{ uni.name }} ({{ uni.short_code }})
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label class="form-label">University B</label>
+        <select name="team_b" class="form-control">
+          {% for uni in universities %}
+            <option value="{{ uni.id }}" {% if team_b_id == uni.id|stringformat:"s" %}selected{% endif %}>
+              {{ uni.name }} ({{ uni.short_code }})
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label class="form-label">Sport Discipline</label>
+        <select name="sport" class="form-control">
+          <option value="All" {% if selected_sport == 'All' %}selected{% endif %}>All Sports</option>
+          {% for s in sports %}
+            <option value="{{ s.name }}" {% if selected_sport == s.name %}selected{% endif %}>{{ s.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <button type="submit" class="btn" style="height: 42px;">Compare Head-to-Head</button>
+      </div>
+    </form>
+  </div>
+
+  {% if is_same_team %}
+    <div class="card" style="background: #FFFBEB; border-color: #FDE68A; margin-bottom: var(--space-8); padding: var(--space-6); text-align: center;">
+      <h3 style="color: #92400E; font-size: var(--text-base); margin-bottom: var(--space-1);">Same Institution Selected</h3>
+      <p style="color: #B45309; font-size: var(--text-sm); margin: 0;">
+        Please select two distinct universities from the dropdowns above to generate historical head-to-head match analytics.
+      </p>
+    </div>
+  {% elif h2h %}
+    <!-- Comparative Stats Banner -->
+    <div class="grid grid-cols-4" style="margin-bottom: var(--space-8);">
+      <div class="card stat-box" style="text-align: center;">
+        <span class="stat-label">Total Matches</span>
+        <span class="stat-value">{{ h2h.total_matches }}</span>
+      </div>
+
+      <div class="card stat-box" style="text-align: center; border-left: 3px solid var(--color-primary);">
+        <span class="stat-label">{{ uni_a.short_code }} Wins</span>
+        <span class="stat-value" style="color: var(--color-primary);">{{ h2h.team_a_wins }}</span>
+      </div>
+
+      <div class="card stat-box" style="text-align: center; border-left: 3px solid var(--color-accent);">
+        <span class="stat-label">{{ uni_b.short_code }} Wins</span>
+        <span class="stat-value" style="color: var(--color-accent);">{{ h2h.team_b_wins }}</span>
+      </div>
+
+      <div class="card stat-box" style="text-align: center;">
+        <span class="stat-label">Draws</span>
+        <span class="stat-value">{{ h2h.draws }}</span>
+      </div>
+    </div>
+
+    <!-- Matchup History -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Historical Fixtures: {{ uni_a.short_code }} vs {{ uni_b.short_code }}</h2>
+        <span class="badge">Differential: {% if h2h.differential > 0 %}+{{ h2h.differential }} for {{ uni_a.short_code }}{% elif h2h.differential < 0 %}+{{ h2h.differential|stringformat:"s"|slice:"1:" }} for {{ uni_b.short_code }}{% else %}Tied{% endif %}</span>
+      </div>
+
+      <div class="table-container">
+        <table class="table-clean">
+          <thead>
+            <tr>
+              <th>Tournament</th>
+              <th>Sport</th>
+              <th>Round</th>
+              <th>Team A</th>
+              <th>Score</th>
+              <th>Team B</th>
+              <th>Winner</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for m in h2h.matches %}
+              <tr>
+                <td><strong>{{ m.tournament }}</strong></td>
+                <td>{{ m.sport }}</td>
+                <td><span class="badge">{{ m.round }}</span></td>
+                <td>{{ m.team_a_name }}</td>
+                <td style="font-family: var(--font-mono); font-weight: 700;">{{ m.team_a_score }} - {{ m.team_b_score }}</td>
+                <td>{{ m.team_b_name }}</td>
+                <td>
+                  {% if m.is_draw %}
+                    <span class="badge">Draw</span>
+                  {% elif m.winner_name == uni_a.name or m.winner_id == uni_a.id|stringformat:"s" %}
+                    <span class="badge badge-primary">{{ uni_a.short_code }} Won</span>
+                  {% elif m.winner_name == uni_b.name or m.winner_id == uni_b.id|stringformat:"s" %}
+                    <span class="badge badge-success">{{ uni_b.short_code }} Won</span>
+                  {% else %}
+                    <span class="badge">{{ m.winner_name|default:"Completed" }}</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="7" style="text-align: center; padding: var(--space-8); color: var(--color-text-muted);">No match records between these two institutions.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,138 @@
+<!-- What this file does:
+     Landing page of UniSports. Displays the platform hero banner, high-level summary metrics, featured tournament table, architecture highlights, and quick platform navigation links.
+-->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <!-- Platform Hero with introduction and primary action buttons -->
+  <section style="padding: var(--space-8) 0 var(--space-12) 0; border-bottom: 1px solid var(--color-border); margin-bottom: var(--space-8);">
+    <div style="max-width: 780px;">
+      <div class="badge badge-primary" style="margin-bottom: var(--space-3);">
+        Inter-University Sports Analytics & Information Platform
+      </div>
+      <h1 style="font-size: clamp(2rem, 5vw, var(--text-4xl)); margin-bottom: var(--space-4);">
+        Unified Athletic Intelligence Across Premier Universities
+      </h1>
+      <p style="font-size: var(--text-lg); color: var(--color-text-secondary); margin-bottom: var(--space-6); line-height: 1.6;">
+        Track live fixtures, points tables, medal tallies, and head-to-head performance metrics powered by a high-performance MongoDB document backend.
+      </p>
+      <div style="display: flex; gap: var(--space-3); flex-wrap: wrap;">
+        <a href="{% url 'tournaments:list' %}" class="btn">Explore Tournaments</a>
+        <a href="{% url 'core:rankings' %}" class="btn btn-secondary">Annual Rankings</a>
+        <a href="{% url 'core:compare' %}" class="btn btn-secondary">Head-to-Head Compare</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Metrics Row -->
+  <section style="margin-bottom: var(--space-8);">
+    <div class="grid grid-cols-4">
+      <div class="card stat-box">
+        <span class="stat-label">Universities Enrolled</span>
+        <span class="stat-value">{{ metrics.universities|default:"07" }}</span>
+      </div>
+      <div class="card stat-box">
+        <span class="stat-label">Sports Disciplines</span>
+        <span class="stat-value">{{ metrics.sports|default:"06" }}</span>
+      </div>
+      <div class="card stat-box">
+        <span class="stat-label">Active Tournaments</span>
+        <span class="stat-value">{{ metrics.tournaments|default:"04" }}</span>
+      </div>
+      <div class="card stat-box">
+        <span class="stat-label">Fixtures Tracked</span>
+        <span class="stat-value" style="color: var(--color-accent);">{{ metrics.fixtures|default:"24" }}+</span>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Main Content Grid -->
+  <div class="grid grid-sidebar">
+    <!-- Left: Tournament Highlights -->
+    <div style="display: flex; flex-direction: column; gap: var(--space-6);">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Featured Tournaments</h2>
+          <a href="{% url 'tournaments:list' %}" style="font-size: var(--text-xs); font-weight: 600;">View All →</a>
+        </div>
+        
+        <div class="table-container">
+          <table class="table-clean">
+            <thead>
+              <tr>
+                <th>Tournament</th>
+                <th>Sport</th>
+                <th>Year</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for t in recent_tournaments %}
+                <tr>
+                  <td>
+                    <a href="{% url 'tournaments:detail' t.id %}" style="color: var(--color-text-primary); font-weight: 700;">
+                      {{ t.name }}
+                    </a>
+                  </td>
+                  <td>{{ t.sport_name }}</td>
+                  <td>{{ t.year }}</td>
+                  <td>
+                    {% if t.status == 'Completed' %}
+                      <span class="badge badge-success">Completed</span>
+                    {% elif t.status == 'Ongoing' %}
+                      <span class="badge badge-primary">Ongoing</span>
+                    {% else %}
+                      <span class="badge">Upcoming</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="4" style="text-align: center; color: var(--color-text-muted);">No tournaments available.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Quick Analytics & Info -->
+    <div style="display: flex; flex-direction: column; gap: var(--space-6);">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Platform Architecture</h2>
+        </div>
+        <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: var(--space-4);">
+          Engineered with MongoEngine ODM and embedded document models to deliver O(1) reads on leaderboards and sub-second analytics aggregation.
+        </p>
+        <div style="display: flex; flex-direction: column; gap: var(--space-2); font-size: var(--text-xs);">
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--color-border-subtle); padding-bottom: var(--space-1);">
+            <span style="color: var(--color-text-secondary);">Framework</span>
+            <span style="font-weight: 600;">Django 5.x</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--color-border-subtle); padding-bottom: var(--space-1);">
+            <span style="color: var(--color-text-secondary);">Database</span>
+            <span style="font-weight: 600;">MongoDB Community / Atlas</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--color-text-secondary);">Live Reload</span>
+            <span style="color: var(--color-accent); font-weight: 600;">Active</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Quick Actions</h2>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+          <a href="{% url 'universities:list' %}" class="btn btn-secondary" style="justify-content: flex-start;">Browse Universities Directory</a>
+          <a href="{% url 'core:rankings' %}" class="btn btn-secondary" style="justify-content: flex-start;">View Overall Medal Tally</a>
+          <a href="{% url 'analytics:dashboard' %}" class="btn btn-secondary" style="justify-content: flex-start;">Interactive Analytics Radar</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

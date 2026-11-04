@@ -1,0 +1,106 @@
+<!-- What this file does:
+     Tournament creation form. Allows Admins and University Coaches to initialize a new sports championship, configure season year, venue, and select participating university rosters.
+-->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 760px; margin-top: var(--space-8);">
+  <div class="card">
+    <!-- Header with breadcrumb and instruction text -->
+    <div style="margin-bottom: var(--space-6);">
+      <a href="{% url back_url|default:'accounts:admin_dashboard' %}" style="font-size: var(--text-xs); color: var(--color-text-secondary);">← Back</a>
+      <div class="badge badge-primary" style="margin-top: var(--space-2); margin-bottom: var(--space-1);">Tournament Operations</div>
+      <h1 style="font-size: var(--text-2xl);">Host New Championship Tournament</h1>
+      <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-top: var(--space-1);">
+        Initialize an inter-university sports league or knockout tournament, establish participating university rosters, and set official venues.
+      </p>
+    </div>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="badge {% if message.tags == 'error' %}badge-danger{% else %}badge-success{% endif %}" style="display: block; margin-bottom: var(--space-4); padding: 0.625rem 1rem;">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label" for="name">Championship / Tournament Title</label>
+        <input type="text" id="name" name="name" class="form-control" placeholder="e.g. All India Inter-University Volleyball Championship" required autofocus>
+      </div>
+
+      <!-- Sport discipline and season year row -->
+      <div class="form-grid-2" style="margin-bottom: var(--space-4);">
+        <div>
+          <label class="form-label" for="sport_code">Sport Discipline</label>
+          <select id="sport_code" name="sport_code" class="form-control" required>
+            {% for sport in sports %}
+              <option value="{{ sport.code }}">{{ sport.name }} ({{ sport.code }}) — {{ sport.category }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label class="form-label" for="year">Season / Academic Year</label>
+          <input type="number" id="year" name="year" class="form-control" value="2026" min="2020" max="2035" required>
+        </div>
+      </div>
+
+      <!-- Host university and lifecycle status row -->
+      <div class="form-grid-2" style="margin-bottom: var(--space-4);">
+        <div>
+          <label class="form-label" for="host_university_id">Host University / Organizer</label>
+          <select id="host_university_id" name="host_university_id" class="form-control" required>
+            {% for uni in universities %}
+              <option value="{{ uni.id }}" {% if user_uni_id and user_uni_id == uni.id|stringformat:"s" %}selected{% endif %}>
+                {{ uni.name }} ({{ uni.short_code }})
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label class="form-label" for="status">Initial Lifecycle Status</label>
+          <select id="status" name="status" class="form-control">
+            <option value="Upcoming" selected>Upcoming (Scheduled)</option>
+            <option value="Ongoing">Ongoing (Active Matches)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="venue">Stadium / Complex / Venue Details</label>
+        <input type="text" id="venue" name="venue" class="form-control" placeholder="e.g. University Sports Complex, Central Grounds">
+      </div>
+
+      <!-- Participating institutions selection roster -->
+      <div class="form-group" style="margin-top: var(--space-6); margin-bottom: var(--space-6);">
+        <label class="form-label" style="margin-bottom: var(--space-2);">
+          Participating Universities Roster
+          <span style="font-weight: 400; font-size: var(--text-xs); color: var(--color-text-secondary);">(Select institutions competing in this championship)</span>
+        </label>
+        
+        <div class="form-grid-2" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: var(--space-4); max-height: 240px; overflow-y: auto; gap: var(--space-2);">
+          {% for uni in universities %}
+            <label style="display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-xs); cursor: pointer; padding: 0.25rem 0;">
+              <input type="checkbox" name="participating_universities" value="{{ uni.id }}" checked style="cursor: pointer;">
+              <span>
+                <strong style="color: var(--color-text-primary);">{{ uni.short_code }}</strong>
+                <span style="color: var(--color-text-secondary);"> — {{ uni.name }}</span>
+              </span>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div style="display: flex; gap: var(--space-3); justify-content: flex-end; border-top: 1px solid var(--color-border-subtle); padding-top: var(--space-4);">
+        <a href="{% url back_url|default:'accounts:admin_dashboard' %}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn">Initialize & Host Tournament</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

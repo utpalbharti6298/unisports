@@ -1,0 +1,78 @@
+/* What this file does:
+   Defines the central color palette, font typography, spacing, and border radius variables (CSS design tokens).
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* Crisp Light Surfaces - Pure whites and clean cool neutrals */
+  --color-bg:              #F8FAFC; /* crisp off-white canvas */
+  --color-surface:         #F1F5F9; /* subtle section surface */
+  --color-surface-card:    #FFFFFF; /* pure white cards */
+  --color-surface-hover:   #F8FAFC;
+  
+  /* Borders - Sharp, clean, non-blurry */
+  --color-border:          #E2E8F0; /* clean light slate border */
+  --color-border-subtle:   #F1F5F9;
+  --color-border-focus:    #2563EB;
+
+  /* Typography - Deep high-contrast ink */
+  --color-text-primary:    #0F172A; /* deep charcoal ink */
+  --color-text-secondary:  #475569; /* slate body / metadata */
+  --color-text-muted:      #94A3B8; /* captions / inactive */
+
+  /* Athletic Accents - True Royal Navy & Athletic Emerald */
+  --color-primary:         #1D4ED8; /* crisp athletic royal blue */
+  --color-primary-hover:   #1E40AF;
+  --color-primary-subtle:  #EFF6FF; /* soft blue tint for badges/tags */
+
+  --color-accent:          #059669; /* rich emerald green */
+  --color-accent-subtle:   #ECFDF5;
+
+  --color-danger:          #DC2626; /* clean red */
+  --color-danger-subtle:   #FEF2F2;
+
+  --color-warning:         #D97706; /* amber */
+  --color-warning-subtle:  #FFFBEB;
+  
+  /* Medals */
+  --color-gold:            #D97706;
+  --color-silver:          #64748B;
+  --color-bronze:          #B45309;
+
+  /* Fonts */
+  --font-sans:             'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:             'JetBrains Mono', monospace;
+
+  /* Type Scale */
+  --text-2xs:  0.6875rem; /* 11px */
+  --text-xs:   0.75rem;   /* 12px */
+  --text-sm:   0.875rem;  /* 14px */
+  --text-base: 1rem;      /* 16px */
+  --text-lg:   1.125rem;  /* 18px */
+  --text-xl:   1.25rem;   /* 20px */
+  --text-2xl:  1.5rem;    /* 24px */
+  --text-3xl:  2rem;      /* 32px */
+  --text-4xl:  2.5rem;    /* 40px */
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
+
+  /* Spacing */
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* Crisp Light Shadows */
+  --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.03);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+}

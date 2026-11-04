@@ -1,0 +1,96 @@
+<!-- What this file does:
+     Administrative entity registration form. Handles creation of new academic universities (name, short code, location, sports) or athletic disciplines (sport name, code, category, scoring points).
+-->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 640px; margin-top: var(--space-8);">
+  <div class="card">
+    <!-- Header with breadcrumb and title -->
+    <div style="margin-bottom: var(--space-6);">
+      <a href="{% url back_url|default:'accounts:admin_dashboard' %}" style="font-size: var(--text-xs); color: var(--color-text-secondary);">← Back</a>
+      <h1 style="font-size: var(--text-2xl); margin-top: var(--space-2);">
+        {% if form_type == 'university' %}Register New University{% else %}Register New Athletic Discipline{% endif %}
+      </h1>
+    </div>
+
+    {% if form_type == 'university' %}
+      <!-- University creation form -->
+      <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">University Name</label>
+          <input type="text" name="name" class="form-control" placeholder="e.g. University of Allahabad" required>
+        </div>
+        <div class="form-grid-2" style="margin-bottom: var(--space-4);">
+          <div>
+            <label class="form-label">Short Code</label>
+            <input type="text" name="short_code" class="form-control" placeholder="e.g. UOA" required maxlength="10">
+          </div>
+          <div>
+            <label class="form-label">Established Year</label>
+            <input type="number" name="established_year" class="form-control" placeholder="e.g. 1887">
+          </div>
+        </div>
+        <div class="form-grid-2" style="margin-bottom: var(--space-4);">
+          <div>
+            <label class="form-label">City</label>
+            <input type="text" name="city" class="form-control" placeholder="e.g. Prayagraj" required>
+          </div>
+          <div>
+            <label class="form-label">State</label>
+            <input type="text" name="state" class="form-control" placeholder="e.g. Uttar Pradesh" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Official Website</label>
+          <input type="url" name="website" class="form-control" placeholder="https://allduniv.ac.in">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sports Enrolled (comma separated)</label>
+          <input type="text" name="sports" class="form-control" placeholder="Cricket, Football, Basketball, Badminton">
+        </div>
+        <button type="submit" class="btn" style="width: 100%;">Save University to Database</button>
+      </form>
+
+    {% elif form_type == 'sport' %}
+      <!-- Sport discipline creation form -->
+      <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">Sport Name</label>
+          <input type="text" name="name" class="form-control" placeholder="e.g. Badminton" required>
+        </div>
+        <div class="form-grid-2" style="margin-bottom: var(--space-4);">
+          <div>
+            <label class="form-label">Discipline Code</label>
+            <input type="text" name="code" class="form-control" placeholder="e.g. BADM" required maxlength="10">
+          </div>
+          <div>
+            <label class="form-label">Category</label>
+            <select name="category" class="form-control">
+              <option value="Team">Team Sport</option>
+              <option value="Individual">Individual Sport</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-3" style="margin-bottom: var(--space-4);">
+          <div>
+            <label class="form-label">Win Points</label>
+            <input type="number" name="win_points" class="form-control" value="2" min="0" max="10" required>
+          </div>
+          <div>
+            <label class="form-label">Draw Points</label>
+            <input type="number" name="draw_points" class="form-control" value="1" min="0" max="5" required>
+          </div>
+          <div>
+            <label class="form-label">Loss Points</label>
+            <input type="number" name="loss_points" class="form-control" value="0" min="0" max="5" required>
+          </div>
+        </div>
+        <button type="submit" class="btn" style="width: 100%;">Register Sport Discipline</button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

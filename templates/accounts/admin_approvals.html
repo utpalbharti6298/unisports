@@ -1,0 +1,95 @@
+<!-- What this file does:
+     Central Administrator score review queue. Lists all match results and scores submitted by university coaches, allowing the administrator to approve or reject them.
+-->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <!-- Governance queue header banner -->
+  <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--space-8); flex-wrap: wrap; gap: var(--space-4);">
+    <div>
+      <div class="badge" style="background: #FEF3C7; color: #B45309; border-color: #FDE68A; margin-bottom: var(--space-2);">Central Sports Board Governance</div>
+      <h1 style="font-size: var(--text-3xl);">Pending Score Submissions</h1>
+      <p style="color: var(--color-text-secondary); font-size: var(--text-sm);">
+        Review match results submitted by college athletic officers before approving them into public rankings.
+      </p>
+    </div>
+
+    <div>
+      <a href="{% url 'accounts:admin_dashboard' %}" class="btn btn-secondary btn-sm">← Back to Dashboard</a>
+    </div>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="badge {% if message.tags == 'error' %}badge-danger{% else %}badge-success{% endif %}" style="display: block; margin-bottom: var(--space-4); padding: 0.625rem 1rem;">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Pending Verification Queue ({{ pending_fixtures|length }})</h2>
+    </div>
+
+    <div class="table-container">
+      <table class="table-clean">
+        <thead>
+          <tr>
+            <th>Submitted By</th>
+            <th>Tournament</th>
+            <th>Matchup</th>
+            <th>Claimed Score</th>
+            <th>Summary / Notes</th>
+            <th style="text-align: right;">Decision</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for fix in pending_fixtures %}
+            <tr>
+              <td>
+                <strong>{{ fix.submitted_by_university|default:fix.submitted_by }}</strong>
+                <div style="font-size: var(--text-xs); color: var(--color-text-muted);">User: {{ fix.submitted_by }}</div>
+              </td>
+              <td>
+                <strong>{{ fix.tournament_name }}</strong>
+                <div style="font-size: var(--text-xs); color: var(--color-text-secondary);">{{ fix.sport_name }} · {{ fix.round_name }}</div>
+              </td>
+              <td>
+                <span class="badge badge-primary">{{ fix.team_a.short_code }}</span> vs <span class="badge badge-primary">{{ fix.team_b.short_code }}</span>
+              </td>
+              <td style="font-family: var(--font-mono); font-weight: 700; font-size: var(--text-base);">
+                {{ fix.team_a.score_display }} - {{ fix.team_b.score_display }}
+              </td>
+              <td style="font-size: var(--text-xs); color: var(--color-text-secondary); max-width: 250px;">
+                {{ fix.result_summary }}
+              </td>
+              <td style="text-align: right; white-space: nowrap;">
+                <form method="POST" action="{% url 'accounts:approve_fixture' fix.id %}" style="display: inline-block; margin-right: var(--space-2);">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm" style="background: var(--color-accent); border-color: var(--color-accent);">
+                    Approve
+                  </button>
+                </form>
+                <form method="POST" action="{% url 'accounts:reject_fixture' fix.id %}" style="display: inline-block;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-secondary btn-sm" style="color: var(--color-danger); border-color: #FECACA;">
+                    Reject
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" style="text-align: center; padding: var(--space-12); color: var(--color-text-muted);">
+                All submitted scores have been verified! No pending items in the queue.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

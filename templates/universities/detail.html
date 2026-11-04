@@ -1,0 +1,127 @@
+<!-- What this file does:
+     University detail profile page. Shows institutional information, win/loss/draw statistics, win percentage, recent championship match history, and enrolled sports.
+-->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <!-- Back navigation breadcrumb -->
+  <div style="margin-bottom: var(--space-6);">
+    <a href="{% url 'universities:list' %}" style="font-size: var(--text-xs); color: var(--color-text-secondary);">← Back to Universities</a>
+  </div>
+
+  <!-- Profile Header Card -->
+  <div class="card" style="margin-bottom: var(--space-8);">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: var(--space-4);">
+      <div>
+        <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-2);">
+          <span class="badge badge-primary" style="font-size: var(--text-sm); font-weight: 700;">{{ university.short_code }}</span>
+          <span style="font-size: var(--text-xs); color: var(--color-text-secondary);">Est. {{ university.established_year|default:"N/A" }}</span>
+        </div>
+        <h1 style="font-size: clamp(1.75rem, 4vw, var(--text-3xl)); margin-bottom: var(--space-2);">{{ university.name }}</h1>
+        <p style="color: var(--color-text-secondary); font-size: var(--text-sm);">
+          {{ university.city }}, {{ university.state }} {% if university.website %}· <a href="{{ university.website }}" target="_blank">Visit Official Site ↗</a>{% endif %}
+        </p>
+      </div>
+
+      <div style="display: flex; gap: var(--space-2);">
+        <a href="{% url 'core:compare' %}?team_a={{ university.id }}" class="btn btn-sm">Compare Head-to-Head →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="grid grid-cols-4" style="margin-bottom: var(--space-8);">
+    <div class="card stat-box">
+      <span class="stat-label">Matches Played</span>
+      <span class="stat-value">{{ stats.played }}</span>
+    </div>
+    <div class="card stat-box">
+      <span class="stat-label">Matches Won</span>
+      <span class="stat-value" style="color: var(--color-accent);">{{ stats.won }}</span>
+    </div>
+    <div class="card stat-box">
+      <span class="stat-label">Losses / Draws</span>
+      <span class="stat-value">{{ stats.lost }} / {{ stats.drawn }}</span>
+    </div>
+    <div class="card stat-box">
+      <span class="stat-label">Win Percentage</span>
+      <span class="stat-value" style="color: var(--color-primary);">{{ stats.win_percentage }}%</span>
+    </div>
+  </div>
+
+  <!-- Disciplines and Match History -->
+  <div class="grid grid-sidebar">
+    <!-- Match History -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Recent Championship Fixtures</h2>
+      </div>
+
+      <div class="table-container">
+        <table class="table-clean">
+          <thead>
+            <tr>
+              <th>Tournament</th>
+              <th>Sport</th>
+              <th>Matchup</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for fix in fixtures %}
+              <tr>
+                <td><strong>{{ fix.tournament_name }}</strong></td>
+                <td>{{ fix.sport_name }}</td>
+                <td>
+                  <span {% if fix.team_a.name == university.name %}style="font-weight: 700; color: var(--color-primary);"{% endif %}>
+                    {{ fix.team_a.short_code }} ({{ fix.team_a.score_display }})
+                  </span>
+                  vs
+                  <span {% if fix.team_b.name == university.name %}style="font-weight: 700; color: var(--color-primary);"{% endif %}>
+                    {{ fix.team_b.short_code }} ({{ fix.team_b.score_display }})
+                  </span>
+                </td>
+                <td>
+                  {% if fix.status != 'Completed' %}
+                    {% if fix.status == 'Live' %}
+                      <span class="badge badge-primary">Live</span>
+                    {% else %}
+                      <span class="badge">Scheduled</span>
+                    {% endif %}
+                  {% elif fix.is_draw %}
+                    <span class="badge">Draw</span>
+                  {% elif fix.winner_name == university.name %}
+                    <span class="badge badge-success">Won</span>
+                  {% else %}
+                    <span class="badge badge-danger">Lost</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="4" style="text-align: center; color: var(--color-text-muted);">No fixtures recorded yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Active Sports Disciplines -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Enrolled Sports</h2>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+        {% for sport in university.sports_enrolled %}
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-2) 0; border-bottom: 1px solid var(--color-border-subtle);">
+            <span style="font-weight: 600; font-size: var(--text-sm);">{{ sport }}</span>
+            <span class="badge badge-primary">Active</span>
+          </div>
+        {% empty %}
+          <p style="color: var(--color-text-muted); font-size: var(--text-sm);">No sports enrolled.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

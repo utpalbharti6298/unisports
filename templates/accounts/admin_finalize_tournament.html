@@ -1,0 +1,104 @@
+<!-- What this file does:
+     Tournament finalization screen for Admins. Displays current standings and allows awarding Gold, Silver, and Bronze medals to conclude a championship and update overall rankings.
+-->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 760px;">
+  <!-- Back navigation breadcrumb -->
+  <div style="margin-bottom: var(--space-6);">
+    <a href="{% url 'tournaments:detail' tournament.id %}" style="font-size: var(--text-xs); color: var(--color-text-secondary);">← Back to {{ tournament.name }}</a>
+  </div>
+
+  <div class="card">
+    <div style="margin-bottom: var(--space-6); border-bottom: 1px solid var(--color-border-subtle); padding-bottom: var(--space-4);">
+      <div class="badge badge-primary" style="margin-bottom: var(--space-2);">Admin Action // Championship Completion</div>
+      <h1 style="font-size: var(--text-2xl); margin-bottom: var(--space-2);">Finalize Tournament & Award Medals</h1>
+      <p style="color: var(--color-text-secondary); font-size: var(--text-sm);">
+        Conclude <strong>{{ tournament.name }} ({{ tournament.year }})</strong>, mark status as <strong>Completed</strong>, and award official podium medals. This immediately feeds into the <strong>Overall University Rankings</strong> for {{ tournament.year }}.
+      </p>
+    </div>
+
+    <!-- Current Points Table Summary -->
+    {% if points_table %}
+      <div style="margin-bottom: var(--space-6);">
+        <h3 style="font-size: var(--text-sm); font-weight: 700; margin-bottom: var(--space-2); color: var(--color-text-secondary);">
+          Current Standings in this Tournament
+        </h3>
+        <div class="table-container">
+          <table class="table-clean" style="font-size: var(--text-xs);">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>University</th>
+                <th style="text-align: center;">P</th>
+                <th style="text-align: center;">W</th>
+                <th style="text-align: right;">Points</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in points_table %}
+                <tr>
+                  <td><strong>#{{ row.rank }}</strong></td>
+                  <td>{{ row.name }} ({{ row.short_code }})</td>
+                  <td style="text-align: center;">{{ row.played }}</td>
+                  <td style="text-align: center;">{{ row.won }}</td>
+                  <td style="text-align: right; font-weight: 700; color: var(--color-primary);">{{ row.points }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Medal Award Form -->
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="form-group" style="margin-bottom: var(--space-4);">
+        <label style="font-size: var(--text-sm); font-weight: 700;">Gold Medal Winner (+5 pts in Overall Rankings):</label>
+        <select name="gold_uni_id" class="form-control" required style="padding: 0.6rem 0.75rem;">
+          <option value="">-- Select Gold Winner --</option>
+          {% for uni in universities %}
+            <option value="{{ uni.id }}" {% if points_table and points_table.0 and points_table.0.short_code == uni.short_code %}selected{% endif %}>
+              {{ uni.name }} ({{ uni.short_code }})
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group" style="margin-bottom: var(--space-4);">
+        <label style="font-size: var(--text-sm); font-weight: 700;">Silver Medal Winner (+3 pts in Overall Rankings):</label>
+        <select name="silver_uni_id" class="form-control" style="padding: 0.6rem 0.75rem;">
+          <option value="">-- Select Silver Winner (Optional) --</option>
+          {% for uni in universities %}
+            <option value="{{ uni.id }}" {% if points_table|length > 1 and points_table.1.short_code == uni.short_code %}selected{% endif %}>
+              {{ uni.name }} ({{ uni.short_code }})
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group" style="margin-bottom: var(--space-6);">
+        <label style="font-size: var(--text-sm); font-weight: 700;">Bronze Medal Winner (+1 pt in Overall Rankings):</label>
+        <select name="bronze_uni_id" class="form-control" style="padding: 0.6rem 0.75rem;">
+          <option value="">-- Select Bronze Winner (Optional) --</option>
+          {% for uni in universities %}
+            <option value="{{ uni.id }}" {% if points_table|length > 2 and points_table.2.short_code == uni.short_code %}selected{% endif %}>
+              {{ uni.name }} ({{ uni.short_code }})
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div style="display: flex; gap: var(--space-3); justify-content: flex-end;">
+        <a href="{% url 'tournaments:detail' tournament.id %}" class="btn" style="background: var(--color-bg); color: var(--color-text-secondary); border: 1px solid var(--color-border-subtle);">Cancel</a>
+        <button type="submit" class="btn btn-primary" onclick="return confirm('Conclude tournament and award podium medals? This marks the tournament as Completed.')">
+          Confirm & Award Medals
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

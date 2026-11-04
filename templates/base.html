@@ -1,0 +1,84 @@
+<!-- What this file does:
+     Base HTML layout template that provides the global navigation bar, viewport settings, stylesheets, mobile drawer menu, and content blocks for all pages across UniSports.
+-->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- Ensure proper mobile viewport scaling on all devices -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title|default:"UniSports"}}</title>
+
+  <!-- Core design tokens and modular stylesheet imports -->
+  <link rel="stylesheet" href="{% static 'css/tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components.css' %}">
+  <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+  <!-- Global navigation bar with responsive toggle and user status actions -->
+  <header class="navbar">
+    <div class="navbar-inner">
+      <a href="{% url 'core:index' %}" class="navbar-brand">
+        <span>UniSports</span>
+      </a>
+
+      <button class="navbar-toggle" id="navbar-toggle" aria-label="Toggle Navigation Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="navbar-links" id="navbar-links">
+        <a href="{% url 'core:index' %}">Home</a>
+        <a href="{% url 'universities:list' %}">Universities</a>
+        <a href="{% url 'sports:list' %}">Sports</a>
+        <a href="{% url 'tournaments:list' %}">Tournaments</a>
+        <a href="{% url 'core:rankings' %}">Rankings</a>
+        <a href="{% url 'core:compare' %}">H2H Compare</a>
+        <a href="{% url 'analytics:dashboard' %}">Analytics</a>
+      </nav>
+
+      <div class="navbar-actions">
+        {% if session_user %}
+        {% if session_user.role == 'admin' %}
+        <a href="{% url 'accounts:admin_dashboard' %}" class="btn btn-secondary btn-sm">Admin Console</a>
+        {% else %}
+        <a href="{% url 'accounts:university_portal' %}" class="btn btn-secondary btn-sm">Member Portal</a>
+        {% endif %}
+        <span class="badge badge-primary">{{ session_user.username }}</span>
+        <a href="{% url 'accounts:logout' %}" class="btn btn-secondary btn-sm">Logout</a>
+        {% else %}
+        <a href="{% url 'accounts:login' %}" class="btn btn-secondary btn-sm" style="font-size: var(--text-xs);">Member Login</a>
+        <a href="{% url 'accounts:login' %}?role=admin" class="btn btn-sm" style="background: var(--color-primary); color: #fff; font-size: var(--text-xs);">Admin Login</a>
+        {% endif %}
+      </div>
+
+    </div>
+  </header>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const toggle = document.getElementById('navbar-toggle');
+      const menu = document.getElementById('navbar-links');
+      if (toggle && menu) {
+        toggle.addEventListener('click', function() {
+          menu.classList.toggle('open');
+        });
+      }
+    });
+  </script>
+
+  <main>
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  {% block extra_js %}{% endblock %}
+</body>
+
+</html>
