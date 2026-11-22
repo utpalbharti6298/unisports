@@ -58,7 +58,7 @@
           {% if session_user %}
             <div class="navbar-mobile-user-card">
               <span class="navbar-mobile-username">{{ session_user.username }}</span>
-              <span class="badge badge-primary">{{ session_user.role|title }}</span>
+              <span style="font-size: var(--text-xs); color: var(--color-text-secondary); font-weight: 600;">({{ session_user.role|title }})</span>
             </div>
             <div class="navbar-mobile-user-btns">
               {% if session_user.role == 'admin' %}
@@ -82,7 +82,6 @@
           {% else %}
             <a href="{% url 'accounts:university_portal' %}" class="btn btn-secondary btn-sm">Portal</a>
           {% endif %}
-          <span class="badge badge-primary">{{ session_user.username }}</span>
           <a href="{% url 'accounts:logout' %}" class="btn btn-secondary btn-sm">Logout</a>
         {% else %}
           <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-sm">Sign In</a>

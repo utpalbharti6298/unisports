@@ -17,10 +17,10 @@
     <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
       <a href="{% url 'tournaments:create' %}" class="btn btn-sm">+ Host Tournament</a>
       <a href="{% url 'accounts:admin_tournament_approvals' %}" class="btn btn-secondary btn-sm">
-        Sanction Tournaments {% if stats.pending_tournaments_count %}<span class="badge badge-primary" style="margin-left: 4px; padding: 0.15rem 0.4rem; font-size: var(--text-2xs);">{{ stats.pending_tournaments_count }}</span>{% endif %}
+        Sanction Tournaments {% if stats.pending_tournaments_count %}({{ stats.pending_tournaments_count }}){% endif %}
       </a>
       <a href="{% url 'accounts:admin_coach_approvals' %}" class="btn btn-secondary btn-sm">
-        Member Approvals {% if stats.pending_coaches_count %}<span class="badge badge-warning" style="margin-left: 4px; padding: 0.15rem 0.4rem; font-size: var(--text-2xs);">{{ stats.pending_coaches_count }}</span>{% endif %}
+        Member Approvals {% if stats.pending_coaches_count %}({{ stats.pending_coaches_count }}){% endif %}
       </a>
       <a href="{% url 'accounts:admin_approvals' %}" class="btn btn-secondary btn-sm">Score Approvals ({{ stats.pending_count }})</a>
       <a href="{% url 'accounts:create_university' %}" class="btn btn-secondary btn-sm">+ Add University</a>
@@ -31,7 +31,7 @@
 
   {% if messages %}
     {% for message in messages %}
-      <div class="badge {% if message.tags == 'error' %}badge-danger{% else %}badge-success{% endif %}" style="display: block; margin-bottom: var(--space-4); padding: 0.625rem 1rem;">
+      <div class="card" style="display: block; margin-bottom: var(--space-4); padding: 0.625rem 1rem; border-color: var(--color-border); font-weight: 600;">
         {{ message }}
       </div>
     {% endfor %}
@@ -41,7 +41,7 @@
   {% if stats.pending_tournaments_count > 0 %}
     <div class="card" style="background: var(--color-surface); border-color: var(--color-border); margin-bottom: var(--space-4); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-3);">
       <div style="display: flex; align-items: center; gap: var(--space-3);">
-        <span class="badge badge-primary" style="font-weight: 700; font-size: var(--text-sm);">
+        <span style="font-weight: 800; font-size: var(--text-xs); color: var(--color-primary); letter-spacing: 0.05em;">
           {{ stats.pending_tournaments_count }} SANCTION PROPOSAL{{ stats.pending_tournaments_count|pluralize:"S" }}
         </span>
         <span style="font-size: var(--text-sm); color: var(--color-text-primary); font-weight: 600;">
