@@ -12,10 +12,9 @@
 
   <div class="card">
     <div style="margin-bottom: var(--space-6); border-bottom: 1px solid var(--color-border-subtle); padding-bottom: var(--space-4);">
-      <div class="badge badge-primary" style="margin-bottom: var(--space-2);">Admin Action // Championship Completion</div>
       <h1 style="font-size: var(--text-2xl); margin-bottom: var(--space-2);">Finalize Tournament & Award Medals</h1>
       <p style="color: var(--color-text-secondary); font-size: var(--text-sm);">
-        Conclude <strong>{{ tournament.name }} ({{ tournament.year }})</strong>, mark status as <strong>Completed</strong>, and award official podium medals. This immediately feeds into the <strong>Overall University Rankings</strong> for {{ tournament.year }}.
+        Conclude <strong>{{ tournament.name }} ({{ tournament.year }})</strong>, mark status as <strong>Completed</strong>, and award podium medals. This immediately feeds into the <strong>Overall University Rankings</strong> for {{ tournament.year }}.
       </p>
     </div>
 
@@ -92,9 +91,9 @@
         </select>
       </div>
 
-      <div style="display: flex; gap: var(--space-3); justify-content: flex-end;">
-        <a href="{% url 'tournaments:detail' tournament.id %}" class="btn" style="background: var(--color-bg); color: var(--color-text-secondary); border: 1px solid var(--color-border-subtle);">Cancel</a>
-        <button type="submit" class="btn btn-primary" onclick="return confirm('Conclude tournament and award podium medals? This marks the tournament as Completed.')">
+      <div style="display: flex; gap: var(--space-3); justify-content: flex-end; flex-wrap: wrap;">
+        <a href="{% url 'tournaments:detail' tournament.id %}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-accent" onclick="return confirm('Conclude tournament and award podium medals? This marks the tournament as Completed.')">
           Confirm & Award Medals
         </button>
       </div>

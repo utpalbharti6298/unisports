@@ -12,7 +12,7 @@ from analytics.services import calculate_ranking_scores, calculate_win_percentag
 def analytics_dashboard(request):
     """Interactive Chart.js visual analytics dashboard."""
     return render(request, 'analytics/dashboard.html', {
-        'title': 'Athletic Intelligence & Analytics // UniSports'
+        'title': 'Analytics'
     })
 
 def api_stats(request):

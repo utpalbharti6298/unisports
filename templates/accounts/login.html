@@ -1,52 +1,32 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container" style="max-width: 480px; margin-top: var(--space-10); margin-bottom: var(--space-12);">
-  <!-- Login title banner and role notice -->
+<div class="container" style="max-width: 460px; margin-top: var(--space-8); margin-bottom: var(--space-12);">
+  <!-- Login title banner -->
   <div style="text-align: center; margin-bottom: var(--space-6);">
-    <div class="badge badge-primary" style="margin-bottom: var(--space-2); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">
-      {% if role == 'admin' %}Central Board Admin Console{% else %}Authorized Personnel Only{% endif %}
-    </div>
     <h1 style="font-size: var(--text-3xl); font-weight: 800; letter-spacing: -0.02em;">
-      {% if role == 'admin' %}Admin Login{% else %}Member Login{% endif %}
+      Portal Sign In
     </h1>
-    <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-top: var(--space-1);">
-      {% if role == 'admin' %}
-        Secure access for Central Board Super Administrators to configure leagues, verify scores, and manage approvals.
-      {% else %}
-        Secure access for Approved University Coaches, Team Managers & Sports Officials.
-      {% endif %}
+    <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-top: var(--space-2); line-height: 1.5;">
+      Sign in to access Central Board Administrator management or University Coach portal features.
     </p>
   </div>
 
   {% if messages %}
     {% for message in messages %}
-      <div class="badge {% if message.tags == 'error' %}badge-danger{% elif message.tags == 'warning' %}badge-warning{% else %}badge-success{% endif %}" style="display: block; text-align: left; margin-bottom: var(--space-4); padding: 0.75rem 1rem; font-size: var(--text-sm); line-height: 1.5; border-radius: var(--radius-sm);">
+      <div class="badge {% if message.tags == 'error' %}badge-danger{% elif message.tags == 'warning' %}badge-warning{% else %}badge-success{% endif %}" style="display: block; text-align: left; margin-bottom: var(--space-4); padding: 0.75rem 1rem; font-size: var(--text-sm); line-height: 1.5; border-radius: var(--radius-sm); white-space: normal;">
         {{ message }}
       </div>
     {% endfor %}
   {% endif %}
 
-  <div class="card" style="box-shadow: var(--shadow-md);">
-    <!-- Role Switcher Segmented Control -->
-    <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-5); background: var(--color-surface); padding: 4px; border-radius: var(--radius-sm); border: 1px solid var(--color-border);">
-      <a href="{% url 'accounts:login' %}" class="btn btn-sm" style="flex: 1; text-align: center; text-decoration: none; {% if role != 'admin' %}background: var(--color-primary); color: #fff; font-weight: 700;{% else %}background: transparent; color: var(--color-text-secondary); border: none; box-shadow: none; font-weight: 600;{% endif %}">
-        Member Login
-      </a>
-      <a href="{% url 'accounts:login' %}?role=admin" class="btn btn-sm" style="flex: 1; text-align: center; text-decoration: none; {% if role == 'admin' %}background: var(--color-primary); color: #fff; font-weight: 700;{% else %}background: transparent; color: var(--color-text-secondary); border: none; box-shadow: none; font-weight: 600;{% endif %}">
-        Admin Login
-      </a>
-    </div>
-
+  <div class="card" style="box-shadow: var(--shadow-sm);">
     <form method="POST" action="{% url 'accounts:login' %}">
       {% csrf_token %}
-      <input type="hidden" name="role" value="{{ role }}">
 
       <div class="form-group">
-        <label class="form-label" for="username">
-          {% if role == 'admin' %}Admin Username or Institutional Email{% else %}Username or Institutional Email{% endif %}
-        </label>
-        <input type="text" id="username" name="username" class="form-control" placeholder="{% if role == 'admin' %}e.g. admin or admin@unisports.edu.in{% else %}e.g. coach_uoa or member@university.edu.in{% endif %}" required autofocus autocomplete="username">
+        <label class="form-label" for="username">Username or Institutional Email</label>
+        <input type="text" id="username" name="username" class="form-control" placeholder="e.g. admin or coach_uoa" required autofocus autocomplete="username">
       </div>
 
       <div class="form-group" style="margin-bottom: var(--space-6);">
@@ -55,34 +35,21 @@
       </div>
 
       <button type="submit" class="btn" style="width: 100%; font-weight: 600; padding: var(--space-3) var(--space-4);">
-        {% if role == 'admin' %}Admin Sign In →{% else %}Member Login →{% endif %}
+        Sign In →
       </button>
     </form>
 
     <div style="margin-top: var(--space-6); padding-top: var(--space-5); border-top: 1px solid var(--color-border); text-align: center;">
-      {% if role == 'admin' %}
-        <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: var(--space-2);">
-          University Coach or Team Official?
-        </p>
-        <a href="{% url 'accounts:login' %}" class="btn btn-secondary" style="width: 100%; text-align: center; font-weight: 600; font-size: var(--text-sm);">
-          Go to Member Portal Login →
-        </a>
-      {% else %}
-        <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: var(--space-3);">
-          New University Member or Sports Official?
-        </p>
-        <a href="{% url 'accounts:register_coach' %}" class="btn btn-secondary" style="width: 100%; text-align: center; font-weight: 600; font-size: var(--text-sm);">
-          Apply for Member Access (Requires Admin Approval) →
-        </a>
-      {% endif %}
+      <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: var(--space-2);">
+        New University Coach or Member?
+      </p>
+      <a href="{% url 'accounts:register_coach' %}" class="btn btn-secondary" style="width: 100%; text-align: center; font-weight: 600; font-size: var(--text-sm);">
+        Apply for Member Access →
+      </a>
     </div>
 
     <div style="margin-top: var(--space-4); text-align: center; font-size: var(--text-2xs); color: var(--color-text-muted);">
-      {% if role == 'admin' %}
-        Default Super Admin credentials: <code>admin</code> / <code>admin123</code>
-      {% else %}
-        Super Admin credentials are automatically initialized from system environment settings.
-      {% endif %}
+      Default Super Admin credentials: <code>admin</code> / <code>admin123</code>
     </div>
   </div>
 </div>

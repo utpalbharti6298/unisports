@@ -46,7 +46,7 @@ def login_view(request):
             else:
                 messages.error(request, err_msg or "Invalid username or password.")
 
-    page_title = 'Admin Login // UniSports' if requested_role == 'admin' else 'Member Login // UniSports'
+    page_title = 'Login'
     return render(request, 'accounts/login.html', {
         'title': page_title,
         'role': requested_role,
@@ -82,7 +82,7 @@ def register_coach(request):
         if not all([full_name, username, email, university_id, password]):
             messages.error(request, "Please fill in all required fields marked with *.")
             return render(request, 'accounts/register_coach.html', {
-                'title': 'Member Registration // UniSports',
+                'title': 'Register',
                 'universities': universities,
                 'form_data': request.POST
             })
@@ -90,7 +90,7 @@ def register_coach(request):
         if len(password) < 6:
             messages.error(request, "Password must be at least 6 characters long.")
             return render(request, 'accounts/register_coach.html', {
-                'title': 'Member Registration // UniSports',
+                'title': 'Register',
                 'universities': universities,
                 'form_data': request.POST
             })
@@ -98,7 +98,7 @@ def register_coach(request):
         if password != password_confirm:
             messages.error(request, "Passwords do not match. Please re-enter.")
             return render(request, 'accounts/register_coach.html', {
-                'title': 'Member Registration // UniSports',
+                'title': 'Register',
                 'universities': universities,
                 'form_data': request.POST
             })
@@ -107,7 +107,7 @@ def register_coach(request):
         if User.objects(username=username).first():
             messages.error(request, f"Username '{username}' is already in use. Please choose another.")
             return render(request, 'accounts/register_coach.html', {
-                'title': 'Member Registration // UniSports',
+                'title': 'Register',
                 'universities': universities,
                 'form_data': request.POST
             })
@@ -115,7 +115,7 @@ def register_coach(request):
         if User.objects(email=email).first():
             messages.error(request, f"An account with email '{email}' already exists.")
             return render(request, 'accounts/register_coach.html', {
-                'title': 'Member Registration // UniSports',
+                'title': 'Register',
                 'universities': universities,
                 'form_data': request.POST
             })
@@ -127,7 +127,7 @@ def register_coach(request):
         except Exception:
             messages.error(request, "Selected university was not found. Please choose a valid university.")
             return render(request, 'accounts/register_coach.html', {
-                'title': 'Member Registration // UniSports',
+                'title': 'Register',
                 'universities': universities,
                 'form_data': request.POST
             })
@@ -155,7 +155,7 @@ def register_coach(request):
         return redirect('accounts:login')
 
     return render(request, 'accounts/register_coach.html', {
-        'title': 'Member Registration // UniSports',
+        'title': 'Register',
         'universities': universities
     })
 
@@ -172,7 +172,7 @@ def admin_dashboard(request):
     users_count = User.objects.count() if hasattr(User.objects, 'count') else 0
 
     context = {
-        'title': 'Admin Console // Control Center',
+        'title': 'Admin',
         'universities': universities,
         'sports': sports,
         'tournaments': tournaments,
@@ -194,7 +194,7 @@ def admin_approvals(request):
     """Lists match scores submitted by university coaches awaiting board approval."""
     pending_fixtures = list(Fixture.objects(approval_status='Pending').order_by('-created_at'))
     return render(request, 'accounts/admin_approvals.html', {
-        'title': 'Pending Score Approvals // Admin',
+        'title': 'Approvals',
         'pending_fixtures': pending_fixtures
     })
 
@@ -246,7 +246,7 @@ def admin_coach_approvals(request):
     rejected_count = User.objects(role='university_admin', approval_status='rejected').count()
 
     return render(request, 'accounts/admin_coach_approvals.html', {
-        'title': 'Member Account Approvals // Admin',
+        'title': 'Members',
         'coaches': coaches,
         'current_status': status_filter,
         'pending_count': pending_count,
@@ -297,7 +297,7 @@ def admin_tournament_approvals(request):
     rejected_count = Tournament.objects(approval_status='Rejected').count()
 
     return render(request, 'accounts/admin_tournament_approvals.html', {
-        'title': 'Tournament Sanctioning // Admin',
+        'title': 'Sanctions',
         'tournaments': tournaments,
         'current_status': status_filter,
         'pending_count': pending_count,
@@ -322,7 +322,7 @@ def admin_approve_tournament(request, tournament_id):
         except Exception:
             pass
 
-        messages.success(request, f"Tournament '{tourn.name}' has been officially sanctioned and approved! Host coach can now freely update venues, schedules, and scores.")
+        messages.success(request, f"Tournament '{tourn.name}' has been sanctioned and approved! Host coach can now freely update venues, schedules, and scores.")
     except Exception as e:
         messages.error(request, f"Error sanctioning tournament: {e}")
 
@@ -407,7 +407,7 @@ def admin_finalize_tournament(request, tournament_id):
                 messages.error(request, f"Error finalizing tournament: {e}")
 
     return render(request, 'accounts/admin_finalize_tournament.html', {
-        'title': f'Finalize {tourn.name} // Admin',
+        'title': 'Finalize',
         'tournament': tourn,
         'points_table': points_table,
         'universities': list(University.objects.all().order_by('name'))
@@ -448,7 +448,7 @@ def admin_create_university(request):
         return redirect(redirect_target)
 
     return render(request, 'accounts/admin_form.html', {
-        'title': 'Add University // UniSports',
+        'title': 'University',
         'form_type': 'university',
         'back_url': redirect_target
     })
@@ -486,7 +486,7 @@ def admin_create_sport(request):
         return redirect(redirect_target)
 
     return render(request, 'accounts/admin_form.html', {
-        'title': 'Add Sport // UniSports',
+        'title': 'Sport',
         'form_type': 'sport',
         'back_url': redirect_target
     })
@@ -532,7 +532,7 @@ def university_portal(request):
         my_tournaments = []
 
     return render(request, 'accounts/university_portal.html', {
-        'title': 'University Sports Portal // Submissions',
+        'title': 'Portal',
         'user': session_user,
         'my_fixtures': my_fixtures,
         'my_tournaments': my_tournaments,
@@ -577,7 +577,7 @@ def submit_score(request):
         if not tournament_id or not opponent_id or not my_score or not opponent_score:
             messages.error(request, "Please fill in all required match details (Tournament, Opponent, and Scores).")
             return render(request, 'accounts/submit_score.html', {
-                'title': 'Submit Match Result // University Portal',
+                'title': 'Submit',
                 'tournaments': tournaments,
                 'universities': universities,
                 'user_uni_name': user_uni_name
@@ -587,7 +587,7 @@ def submit_score(request):
             if not ObjectId.is_valid(tournament_id) or not ObjectId.is_valid(opponent_id):
                 messages.error(request, "Invalid tournament or opponent selected.")
                 return render(request, 'accounts/submit_score.html', {
-                    'title': 'Submit Match Result // University Portal',
+                    'title': 'Submit',
                     'tournaments': tournaments,
                     'universities': universities,
                     'user_uni_name': user_uni_name
@@ -611,7 +611,7 @@ def submit_score(request):
             if not my_uni:
                 messages.error(request, "No university profile available for your account. Please contact an administrator.")
                 return render(request, 'accounts/submit_score.html', {
-                    'title': 'Submit Match Result // University Portal',
+                    'title': 'Submit',
                     'tournaments': tournaments,
                     'universities': universities,
                     'user_uni_name': user_uni_name
@@ -620,7 +620,7 @@ def submit_score(request):
             if str(my_uni.id) == str(opponent.id):
                 messages.error(request, "Cannot submit a match against your own university! Please select a valid opponent.")
                 return render(request, 'accounts/submit_score.html', {
-                    'title': 'Submit Match Result // University Portal',
+                    'title': 'Submit',
                     'tournaments': tournaments,
                     'universities': universities,
                     'user_uni_name': user_uni_name
@@ -693,7 +693,7 @@ def submit_score(request):
             messages.error(request, f"Error submitting match score: {e}")
 
     return render(request, 'accounts/submit_score.html', {
-        'title': 'Submit Match Result // University Portal',
+        'title': 'Submit',
         'tournaments': tournaments,
         'universities': universities,
         'user_uni_name': user_uni_name

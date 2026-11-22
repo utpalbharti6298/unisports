@@ -9,23 +9,15 @@
     <!-- Header with breadcrumb and status summary -->
     <div style="margin-bottom: var(--space-6);">
       <a href="{% url 'tournaments:detail' tournament.id %}" style="font-size: var(--text-xs); color: var(--color-text-secondary);">← Back to Tournament</a>
-      <div style="display: flex; gap: var(--space-2); align-items: center; margin-top: var(--space-2); margin-bottom: var(--space-1); flex-wrap: wrap;">
-        <span class="badge badge-primary">{{ tournament.sport_name }}</span>
-        {% if tournament.approval_status == 'Approved' %}
-          <span class="badge badge-success">Sanctioned by Board</span>
-        {% elif tournament.approval_status == 'Pending' %}
-          <span class="badge" style="background: #FEF3C7; color: #B45309; border-color: #FDE68A;">Sanction Pending</span>
-        {% endif %}
-      </div>
-      <h1 style="font-size: clamp(1.5rem, 3.5vw, var(--text-2xl));">Edit Tournament Details</h1>
+      <h1 style="font-size: clamp(1.5rem, 3.5vw, var(--text-2xl)); margin-top: var(--space-2);">Edit Tournament Details</h1>
       <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-top: var(--space-1);">
         Update scheduling, stadium venue, participating university roster, and tournament status.
       </p>
     </div>
 
     <!-- Delegated Authority Notice -->
-    <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-sm); padding: var(--space-3) var(--space-4); margin-bottom: var(--space-6); font-size: var(--text-xs); color: var(--color-text-primary);">
-      <strong style="color: #059669;">Delegated Host Management:</strong> Once a tournament is sanctioned by the Central Board Admin, the host member can update venue, schedules, and scores directly without requiring repeated board approvals.
+    <div style="background: var(--color-accent-subtle); border: 1px solid #A7F3D0; border-radius: var(--radius-sm); padding: var(--space-3) var(--space-4); margin-bottom: var(--space-6); font-size: var(--text-xs); color: var(--color-text-primary);">
+      <strong style="color: var(--color-accent);">Delegated Host Management:</strong> Once a tournament is sanctioned by the Central Board Admin, the host member can update venue, schedules, and scores directly without requiring repeated board approvals.
     </div>
 
     {% if messages %}

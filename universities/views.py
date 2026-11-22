@@ -20,7 +20,7 @@ def university_list(request):
         unis = []
 
     return render(request, 'universities/list.html', {
-        'title': 'Universities Directory // UniSports',
+        'title': 'Universities',
         'universities': unis,
         'search_query': search_query
     })
@@ -55,7 +55,7 @@ def university_detail(request, uni_id):
         fixtures = []
 
     return render(request, 'universities/detail.html', {
-        'title': f'{uni.name} ({uni.short_code}) // Athletics Profile',
+        'title': uni.short_code,
         'university': uni,
         'stats': stats,
         'fixtures': fixtures

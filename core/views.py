@@ -18,7 +18,7 @@ def index(request):
     recent_tournaments = list(Tournament.objects(approval_status__nin=['Pending', 'Rejected']).order_by('-year')[:4]) if hasattr(Tournament.objects, 'filter') else []
 
     context = {
-        'title': 'UniSports // Inter-University Sports Intelligence Platform',
+        'title': 'Home',
         'metrics': {
             'universities': universities_count,
             'sports': sports_count,
@@ -48,7 +48,7 @@ def rankings(request):
     )
 
     context = {
-        'title': 'Annual Rankings & Medal Leaderboard // UniSports',
+        'title': 'Rankings',
         'ranked_universities': ranked_universities,
         'selected_year': safe_year,
         'selected_sport': selected_sport,
@@ -113,7 +113,7 @@ def compare(request):
             h2h_data = None
 
     context = {
-        'title': 'Head-to-Head Comparative Matrix // UniSports',
+        'title': 'Compare',
         'universities': universities,
         'sports': sports,
         'team_a_id': str(uni_a.id) if uni_a else '',

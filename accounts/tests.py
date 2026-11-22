@@ -123,26 +123,16 @@ class AccountsTestCase(unittest.TestCase):
         resp = c.get('/')
         self.assertEqual(resp.status_code, 200)
         content = resp.content.decode('utf-8')
-        self.assertIn('Member Login', content)
-        self.assertIn('Admin Login', content)
+        # Single unified Sign In button in navbar
+        self.assertIn('Sign In', content)
         self.assertNotIn('Member Sign Up', content)
-        # Member Login appears first, Admin Login appears second
-        member_idx = content.find('Member Login')
-        admin_idx = content.find('Admin Login')
-        self.assertTrue(member_idx < admin_idx)
 
     def test_login_page_role_toggle(self):
         from django.test import Client
         c = Client()
-        # Admin login page
-        resp_admin = c.get('/accounts/login/?role=admin')
-        self.assertEqual(resp_admin.status_code, 200)
-        content_admin = resp_admin.content.decode('utf-8')
-        self.assertIn('Admin Login', content_admin)
-        self.assertIn('Admin Sign In', content_admin)
-
-        # Member login page
-        resp_member = c.get('/accounts/login/')
-        self.assertEqual(resp_member.status_code, 200)
-        content_member = resp_member.content.decode('utf-8')
-        self.assertIn('Member Login', content_member)
+        # Single unified login page
+        resp = c.get('/accounts/login/')
+        self.assertEqual(resp.status_code, 200)
+        content = resp.content.decode('utf-8')
+        self.assertIn('Portal Sign In', content)
+        self.assertIn('Sign In', content)

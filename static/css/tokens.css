@@ -1,44 +1,49 @@
 /* What this file does:
    Defines the central color palette, font typography, spacing, and border radius variables (CSS design tokens).
+   Authentic collegiate athletic design system: Varsity Navy, Athletic Emerald, Warm Amber, Crisp Light Slate.
+   Zero purples, zero glows, zero fuzzy colored halos.
 */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  /* Crisp Light Surfaces - Pure whites and clean cool neutrals */
+  /* Crisp Light Surfaces - Pure whites and clean architectural neutrals */
   --color-bg:              #F8FAFC; /* crisp off-white canvas */
   --color-surface:         #F1F5F9; /* subtle section surface */
   --color-surface-card:    #FFFFFF; /* pure white cards */
   --color-surface-hover:   #F8FAFC;
   
-  /* Borders - Sharp, clean, non-blurry */
-  --color-border:          #E2E8F0; /* clean light slate border */
-  --color-border-subtle:   #F1F5F9;
-  --color-border-focus:    #2563EB;
+  /* Borders - Sharp, authentic, non-blurry */
+  --color-border:          #CBD5E1; /* solid light slate border */
+  --color-border-subtle:   #E2E8F0;
+  --color-border-focus:    #1E3A8A;
 
   /* Typography - Deep high-contrast ink */
   --color-text-primary:    #0F172A; /* deep charcoal ink */
   --color-text-secondary:  #475569; /* slate body / metadata */
-  --color-text-muted:      #94A3B8; /* captions / inactive */
+  --color-text-muted:      #64748B; /* captions / inactive */
 
-  /* Athletic Accents - True Royal Navy & Athletic Emerald */
-  --color-primary:         #1D4ED8; /* crisp athletic royal blue */
-  --color-primary-hover:   #1E40AF;
-  --color-primary-subtle:  #EFF6FF; /* soft blue tint for badges/tags */
+  /* Authentic Athletic Accents - Deep Varsity Navy & Collegiate Emerald */
+  --color-primary:         #1E3A8A; /* classic collegiate varsity navy */
+  --color-primary-hover:   #172554; /* deep navy hover */
+  --color-primary-subtle:  #EFF6FF; /* soft navy tint for badges/tags */
 
-  --color-accent:          #059669; /* rich emerald green */
+  --color-accent:          #047857; /* varsity emerald green */
+  --color-accent-hover:    #065F46;
   --color-accent-subtle:   #ECFDF5;
 
-  --color-danger:          #DC2626; /* clean red */
+  --color-danger:          #B91C1C; /* varsity crimson */
+  --color-danger-hover:    #991B1B;
   --color-danger-subtle:   #FEF2F2;
 
-  --color-warning:         #D97706; /* amber */
+  --color-warning:         #B45309; /* athletic amber / bronze */
+  --color-warning-hover:   #92400E;
   --color-warning-subtle:  #FFFBEB;
   
   /* Medals */
-  --color-gold:            #D97706;
-  --color-silver:          #64748B;
-  --color-bronze:          #B45309;
+  --color-gold:            #B45309;
+  --color-silver:          #475569;
+  --color-bronze:          #9A3412;
 
   /* Fonts */
   --font-sans:             'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -56,9 +61,9 @@
   --text-4xl:  2.5rem;    /* 40px */
 
   /* Radius */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
   --radius-full: 9999px;
 
   /* Spacing */
@@ -66,13 +71,15 @@
   --space-2:  0.5rem;
   --space-3:  0.75rem;
   --space-4:  1rem;
+  --space-5:  1.25rem;
   --space-6:  1.5rem;
   --space-8:  2rem;
+  --space-10: 2.5rem;
   --space-12: 3rem;
   --space-16: 4rem;
 
-  /* Crisp Light Shadows */
-  --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.03);
-  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
-  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+  /* Crisp, Authentic Light Elevation (No Glowing Shadows) */
+  --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 2px 4px -1px rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
 }

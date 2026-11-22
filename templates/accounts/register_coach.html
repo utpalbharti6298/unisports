@@ -1,5 +1,5 @@
 <!-- What this file does:
-     Provides the registration form for university athletic coaches and officials.
+     Provides the registration form for university athletic coaches and members.
      New registrations are saved with 'pending' status until verified by the Super Admin.
 -->
 {% extends 'base.html' %}
@@ -8,12 +8,9 @@
 <div class="container" style="max-width: 620px; margin-top: var(--space-8); margin-bottom: var(--space-12);">
   
   <div style="text-align: center; margin-bottom: var(--space-6);">
-    <div class="badge badge-primary" style="margin-bottom: var(--space-2); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">
-      Member Registration
-    </div>
-    <h1 style="font-size: var(--text-3xl); font-weight: 800; letter-spacing: -0.02em;">University Member & Official Portal</h1>
+    <h1 style="font-size: var(--text-3xl); font-weight: 800; letter-spacing: -0.02em;">University Member Portal</h1>
     <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-top: var(--space-1); max-width: 480px; margin-left: auto; margin-right: auto;">
-      Register as an authorized university athletic director, member, coach, or sports officer. All requests require Central Board verification.
+      Register as an authorized university athletic director, member, or coach. All requests require Central Board verification.
     </p>
   </div>
 
@@ -73,7 +70,7 @@
       <!-- Email & Phone Contact Row (responsive) -->
       <div class="form-grid-2">
         <div class="form-group">
-          <label class="form-label" for="email">Official / Institutional Email <span style="color: var(--color-danger);">*</span></label>
+          <label class="form-label" for="email">Institutional Email <span style="color: var(--color-danger);">*</span></label>
           <input type="email" id="email" name="email" class="form-control" placeholder="member@university.edu.in" value="{{ form_data.email|default:'' }}" required>
         </div>
 
@@ -114,9 +111,9 @@
     </form>
 
     <div style="margin-top: var(--space-6); padding-top: var(--space-4); border-top: 1px solid var(--color-border); text-align: center; font-size: var(--text-sm); color: var(--color-text-secondary);">
-      Already have an approved account? 
+      Already have an authorized account? 
       <a href="{% url 'accounts:login' %}" style="color: var(--color-primary); font-weight: 600; text-decoration: underline;">
-        Sign in to Member Portal
+        Sign In here →
       </a>
     </div>
   </div>

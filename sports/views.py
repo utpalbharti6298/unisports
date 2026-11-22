@@ -10,7 +10,7 @@ def sport_list(request):
     """Lists sports disciplines and points system."""
     sports = list(Sport.objects.all().order_by('name'))
     return render(request, 'sports/list.html', {
-        'title': 'Sports Disciplines // UniSports',
+        'title': 'Sports',
         'sports': sports
     })
 
@@ -35,7 +35,7 @@ def sport_detail(request, sport_id):
     tournaments = list(Tournament.objects(sport_code=sport.code, approval_status='Approved').order_by('-year'))
 
     return render(request, 'sports/detail.html', {
-        'title': f'{sport.name} // Sports Discipline',
+        'title': sport.name,
         'sport': sport,
         'tournaments': tournaments
     })

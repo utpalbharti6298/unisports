@@ -53,7 +53,7 @@ def tournament_list(request):
         tournaments = []
 
     return render(request, 'tournaments/list.html', {
-        'title': 'Championship Tournaments // UniSports',
+        'title': 'Tournaments',
         'tournaments': tournaments,
         'current_status': status_filter
     })
@@ -78,7 +78,7 @@ def tournament_detail(request, tournament_id):
 
     # Privacy Guard: If tournament is pending or rejected, only Board Admin or Host Coach may access
     if getattr(tournament, 'approval_status', 'Approved') in ['Pending', 'Rejected'] and not (is_admin or is_host_coach):
-        raise Http404("Tournament proposal is currently pending official board sanctioning and is not publicly accessible.")
+        raise Http404("Tournament proposal is currently pending board sanctioning and is not publicly accessible.")
 
     # Algorithm 3: Points table
     points_table = compute_tournament_points_table(tournament.id)
@@ -95,7 +95,7 @@ def tournament_detail(request, tournament_id):
     can_edit = is_admin or is_host_coach
 
     return render(request, 'tournaments/detail.html', {
-        'title': f'{tournament.name} ({tournament.year}) // Tournament Dashboard',
+        'title': 'Tournament',
         'tournament': tournament,
         'points_table': points_table,
         'fixtures': fixtures,
@@ -120,7 +120,7 @@ def export_tournament_pdf(request, tournament_id):
         )
     )
     if getattr(tournament, 'approval_status', 'Approved') in ['Pending', 'Rejected'] and not (is_admin or is_host_coach):
-        raise Http404("Official tournament report is unavailable for unsanctioned tournaments.")
+        raise Http404("Tournament report is unavailable for unsanctioned tournaments.")
 
     points_table = compute_tournament_points_table(tournament.id)
 
@@ -136,7 +136,7 @@ def export_tournament_pdf(request, tournament_id):
 
     # PDF Content
     p.setFont("Helvetica-Bold", 18)
-    p.drawString(50, height - 50, "UniSports — Official Tournament Report")
+    p.drawString(50, height - 50, "UniSports — Tournament Report")
     
     p.setFont("Helvetica", 12)
     p.drawString(50, height - 75, safe_text(f"Tournament: {tournament.name} ({tournament.year})"))
@@ -282,7 +282,7 @@ def tournament_create(request):
             messages.error(request, "Please fill in all required fields (Name, Sport, Host University).")
 
     return render(request, 'tournaments/create.html', {
-        'title': 'Host Championship Tournament // UniSports',
+        'title': 'Host',
         'sports': sports,
         'universities': universities,
         'user_uni_id': user_uni_id,
@@ -378,7 +378,7 @@ def tournament_edit(request, tournament_id):
                 messages.error(request, f"Error updating tournament: {e}")
 
     return render(request, 'tournaments/edit.html', {
-        'title': f'Edit {tournament.name} // UniSports',
+        'title': 'Edit',
         'tournament': tournament,
         'universities': universities,
         'existing_uni_ids': existing_uni_ids,

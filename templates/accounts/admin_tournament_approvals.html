@@ -51,7 +51,7 @@
       </div>
       <h1 style="font-size: clamp(1.5rem, 3.5vw, var(--text-3xl)); font-weight: 800;">Tournament Sanctioning Queue</h1>
       <p style="color: var(--color-text-secondary); font-size: var(--text-sm);">
-        Review championship applications. Once a tournament is officially sanctioned, the host member can update venues, schedules, and scores directly without requiring repeated board approvals.
+        Review championship applications. Once a tournament is sanctioned, the host member can update venues, schedules, and scores directly without requiring repeated board approvals.
       </p>
     </div>
 
@@ -63,8 +63,8 @@
   </div>
 
   <!-- Delegated Management Notice -->
-  <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-sm); padding: var(--space-3) var(--space-4); margin-bottom: var(--space-6); font-size: var(--text-xs); color: var(--color-text-primary);">
-    <strong style="color: #059669;">Admin Workload Reduction:</strong> By sanctioning a tournament once, the board authorizes the host member to manage match scores and tournament logistics autonomously. Match results for sanctioned tournaments publish immediately.
+  <div style="background: var(--color-accent-subtle); border: 1px solid #A7F3D0; border-radius: var(--radius-sm); padding: var(--space-3) var(--space-4); margin-bottom: var(--space-6); font-size: var(--text-xs); color: var(--color-text-primary);">
+    <strong style="color: var(--color-accent);">Delegated Host Management:</strong> By sanctioning a tournament, the host member can manage match scores, rosters, and schedules directly. Match results publish immediately.
   </div>
 
   {% if messages %}
@@ -79,19 +79,19 @@
   <div style="display: flex; gap: var(--space-2); border-bottom: 2px solid var(--color-border); margin-bottom: var(--space-6); overflow-x: auto;">
     <a href="?status=Pending" class="approval-tab {% if current_status == 'Pending' %}active-pending{% endif %}">
       Pending Sanction
-      <span class="badge" style="background: var(--color-warning); color: #000; font-size: 0.65rem; padding: 0.1rem 0.4rem;">
+      <span class="badge badge-warning" style="font-size: var(--text-2xs);">
         {{ pending_count }}
       </span>
     </a>
     <a href="?status=Approved" class="approval-tab {% if current_status == 'Approved' %}active-approved{% endif %}">
       Sanctioned
-      <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: var(--color-accent); font-size: 0.65rem; padding: 0.1rem 0.4rem;">
+      <span class="badge badge-success" style="font-size: var(--text-2xs);">
         {{ approved_count }}
       </span>
     </a>
     <a href="?status=Rejected" class="approval-tab {% if current_status == 'Rejected' %}active-rejected{% endif %}">
       Declined
-      <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: var(--color-danger); font-size: 0.65rem; padding: 0.1rem 0.4rem;">
+      <span class="badge badge-danger" style="font-size: var(--text-2xs);">
         {{ rejected_count }}
       </span>
     </a>
@@ -153,7 +153,7 @@
               </td>
               <td>
                 {% if t.approval_status == 'Pending' %}
-                  <span class="badge" style="background: #FEF3C7; color: #B45309; border-color: #FDE68A;">Pending Sanction</span>
+                  <span class="badge badge-warning">Pending Sanction</span>
                 {% elif t.approval_status == 'Approved' %}
                   <span class="badge badge-success">Sanctioned</span>
                 {% else %}
@@ -166,7 +166,7 @@
                     Edit
                   </a>
                   {% if t.approval_status == 'Pending' %}
-                    <a href="{% url 'accounts:admin_approve_tournament' t.id %}" class="btn btn-sm" style="background: #059669; color: #fff; border-color: #059669;" onclick="return confirm('Sanction this tournament? The host member will be authorized to update schedules, venues, and match scores directly.');">
+                    <a href="{% url 'accounts:admin_approve_tournament' t.id %}" class="btn btn-sm btn-accent" onclick="return confirm('Sanction this tournament? The host member will be authorized to update schedules, venues, and match scores directly.');">
                       Sanction
                     </a>
                     <a href="{% url 'accounts:admin_reject_tournament' t.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Decline this tournament proposal?');">

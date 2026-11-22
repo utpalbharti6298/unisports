@@ -8,7 +8,6 @@
   <!-- Coach portal header with institution greeting and quick action buttons -->
   <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--space-8); flex-wrap: wrap; gap: var(--space-4);">
     <div>
-      <div class="badge badge-primary" style="margin-bottom: var(--space-2);">University Member Portal</div>
       <h1 style="font-size: var(--text-3xl);">{{ user_uni_name|default:"University Sports In-Charge" }}</h1>
       <p style="color: var(--color-text-secondary); font-size: var(--text-sm);">
         Logged in as: <strong>{{ user.username }}</strong> · Submit match results and track Central Board approval statuses.
@@ -78,9 +77,9 @@
                   <span class="badge">Upcoming</span>
                 {% endif %}
                 {% if t.approval_status == 'Pending' %}
-                  <span class="badge" style="background: #FEF3C7; color: #B45309; border-color: #FDE68A; margin-top: 2px; display: inline-block;">Pending Sanction</span>
+                  <span class="badge badge-warning" style="margin-top: 2px;">Pending Sanction</span>
                 {% elif t.approval_status == 'Approved' %}
-                  <span class="badge" style="background: #ECFDF5; color: #059669; border-color: #A7F3D0; margin-top: 2px; display: inline-block;">Sanctioned</span>
+                  <span class="badge badge-success" style="margin-top: 2px;">Sanctioned</span>
                 {% endif %}
               </td>
               <td style="text-align: right; white-space: nowrap;">
@@ -139,7 +138,7 @@
                 {% if fix.approval_status == 'Approved' %}
                   <span class="badge badge-success">Approved & Live</span>
                 {% elif fix.approval_status == 'Pending' %}
-                  <span class="badge" style="background: #FEF3C7; color: #B45309; border-color: #FDE68A;">Pending Board Review</span>
+                  <span class="badge badge-warning">Pending Board Review</span>
                 {% else %}
                   <span class="badge badge-danger">Rejected</span>
                 {% endif %}

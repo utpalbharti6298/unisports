@@ -15,20 +15,27 @@ html {
   color: var(--color-text-primary);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 body {
   font-family: var(--font-sans);
   background-color: var(--color-bg);
   color: var(--color-text-primary);
-  line-height: 1.6;
+  line-height: 1.5;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  max-width: 100%;
+  overflow-x: clip;
+  position: relative;
 }
 
 main {
   flex: 1;
+  width: 100%;
 }
 
 /* Headings */
@@ -50,8 +57,14 @@ a:hover {
   color: var(--color-primary-hover);
 }
 
+/* Images & Media responsive safety */
+img, svg, canvas {
+  max-width: 100%;
+  height: auto;
+}
+
 /* Selection */
 ::selection {
   background: #DBEAFE;
-  color: #1E3A8A;
+  color: #0F172A;
 }
